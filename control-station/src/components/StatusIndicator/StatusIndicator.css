@@ -1,0 +1,55 @@
+.status-indicator-container {
+  position: fixed;
+  left: 10px; 
+  top: 50%;
+  transform: translateY(-50%);
+  width: 70px; 
+  height: 300px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: gray;
+  padding: 15px 0;
+  border-radius: 10px;
+}
+
+.status-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.status-circles {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 80%;
+}
+
+.status-circle {
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%;
+  border: 2px solid #333;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.status-circle.red {
+  background-color: #F44336;
+}
+
+.status-circle.yellow {
+  background-color: #FFA500;
+}
+
+.status-circle.green {
+  background-color: #4CAF50;
+}
+
+.status-circle.active {
+  opacity: 1;
+}
