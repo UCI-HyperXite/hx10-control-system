@@ -1,11 +1,11 @@
-import HX from "../images/HX_Logo.svg";
+import HX from "../../images/HX_Logo.svg";
 
 import "./Navbar.css";
 
 function Navbar() {
 	return (
 		<header className="navbar">
-			<img alt="HX logo" src={HX} style={{ height: "60px" }} />
+			<img alt="HX logo" src={HX} style={{ height: "30px" }} />
 			HyperXite
 		</header>
 	);

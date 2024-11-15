@@ -1,0 +1,24 @@
+.status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background-color: gray;
+  }
+  
+  .status-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .run { background-color: #4CAF50; color: white; }
+  .stop { background-color: #F44336; color: white; }
+  .halt { background-color: #FFA500; color: white; }
+  .load { background-color: #FFD700; color: white; }
