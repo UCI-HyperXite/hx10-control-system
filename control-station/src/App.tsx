@@ -1,7 +1,8 @@
 import React from 'react';
-import Navbar from './components/Navbar/Navbar';
-import StatusIndicator from './components/StatusIndicator/StatusIndicator';
-import ControlPanel from './components/ControlPanel/ControlPanel';
+import Navbar from "@/components/Navbar/Navbar";
+import StatusIndicator from "@/components/StatusIndicator/StatusIndicator";
+import ControlPanel from "@/components/ControlPanel/ControlPanel";
+
 import './App.css';
 
 function App() {
@@ -10,7 +11,7 @@ function App() {
       <Navbar />
       <StatusIndicator status="green" />
       <main className="content">
-        {"HX10 GUI"}
+        HX10 GUI
       </main>
       <ControlPanel />
     </div>
