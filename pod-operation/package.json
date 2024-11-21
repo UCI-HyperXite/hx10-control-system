@@ -1,0 +1,10 @@
+{
+  "name": "pod-operation",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "lint": "cargo clippy",
+    "format": "cargo fmt"
+  },
+  "author": ""
+}
