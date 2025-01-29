@@ -1,20 +1,18 @@
-use socketcan::{CanFrame, CanSocket};
+use socketcan::{CanFrame, CanSocket, Socket};
 use std::collections::HashMap;
 use std::time::Duration;
+use socketcan::{EmbeddedFrame, Id, StandardId}; // Import Id and StandardId for CAN IDs
 
 // Enum for BMS states
-// class Bms(Enum):
-// VOLTAGE_IN_RANGE = 1
-// LOW_CELL_VOLTAGE = 2
+#[derive(Debug)] 
 enum BmsState {
     VoltageInRange,
     LowCellVoltage,
 }
 
-fn decode(can_id: u32, data: &[u8]) -> Result<HashMap<String, f32>, String> {
-    // message encodings from original Python script 
+fn decode(can_id: Id, data: &[u8]) -> Result<HashMap<String, f32>, String> {
     match can_id {
-        0x101 => {
+        Id::Standard(id) if id == StandardId::new(0x101).unwrap() => {
             if data.len() >= 7 {
                 let temp_avg = f32::from(u16::from_le_bytes([data[0], data[1]])) * 0.1;
                 let temp_low = f32::from(u16::from_le_bytes([data[2], data[3]])) * 0.1;
@@ -28,7 +26,7 @@ fn decode(can_id: u32, data: &[u8]) -> Result<HashMap<String, f32>, String> {
                 Err("Insufficient data for ID 101".to_string())
             }
         }
-        0x100 => {
+        Id::Standard(id) if id == StandardId::new(0x100).unwrap() => {
             if data.len() >= 7 {
                 let pack_current = f32::from(u16::from_be_bytes([data[0], data[1]])) * 0.1;
                 let pack_voltage = f32::from(u16::from_le_bytes([data[2], data[3]])) * 0.1;
@@ -44,7 +42,7 @@ fn decode(can_id: u32, data: &[u8]) -> Result<HashMap<String, f32>, String> {
                 Err("Insufficient data for ID 100".to_string())
             }
         }
-        0x103 => {
+        Id::Standard(id) if id == StandardId::new(0x103).unwrap() => {
             if data.len() >= 7 {
                 let cell_id = data[0] as usize + 1;
                 let instant_voltage = f32::from(u16::from_be_bytes([data[1], data[2]])) * 0.1;
@@ -64,36 +62,36 @@ fn decode(can_id: u32, data: &[u8]) -> Result<HashMap<String, f32>, String> {
     }
 }
 
-// Function to monitor BMS and check low voltage
-fn low_voltage_check() {
-    // open CAN socket
-    let can_socket = CanSocket::open("can0").expect("CAN socket did not open aaaaAAAAAA");
+pub fn low_voltage_check() {
+    // Open CAN socket
+    let can_socket = CanSocket::open("can0").expect("CAN socket did not open");
     can_socket.set_read_timeout(Duration::from_secs(1)).unwrap();
 
     let mut cells = vec![0.0; 12];
     let mut low_voltage_detected = false;
 
-    // read_frame() method listens for incoming frames 
     while !low_voltage_detected {
-        match can_socket.read_frame() { 
+        match can_socket.read_frame() {
             Ok(frame) => {
                 let can_id = frame.id();
                 let data = frame.data();
 
                 match decode(can_id, data) {
                     Ok(decoded_data) => {
-                        if can_id == 0x103 {
-                            let cell_id = decoded_data["cell_id"] as usize;
-                            if cell_id <= 12 {
-                                cells[cell_id - 1] = decoded_data["instant_voltage"];
-                            }
-                        } else if can_id == 0x100 {
-                            if let Some(pack_voltage) = decoded_data.get("pack_voltage") {
-                                println!("Pack Voltage: {:.2} V", pack_voltage);
-                            }
-                        } else if can_id == 0x101 {
-                            if let Some(temp_avg) = decoded_data.get("temp_avg") {
-                                println!("Average Temperature: {:.1} C", temp_avg);
+                        if let Id::Standard(id) = can_id {
+                            if id == StandardId::new(0x103).unwrap() {
+                                let cell_id = decoded_data["cell_id"] as usize;
+                                if cell_id <= 12 {
+                                    cells[cell_id - 1] = decoded_data["instant_voltage"];
+                                }
+                            } else if id == StandardId::new(0x100).unwrap() {
+                                if let Some(pack_voltage) = decoded_data.get("pack_voltage") {
+                                    println!("Pack Voltage: {:.2} V", pack_voltage);
+                                }
+                            } else if id == StandardId::new(0x101).unwrap() {
+                                if let Some(temp_avg) = decoded_data.get("temp_avg") {
+                                    println!("Average Temperature: {:.1} C", temp_avg);
+                                }
                             }
                         }
                     }
@@ -122,8 +120,4 @@ fn low_voltage_check() {
             }
         }
     }
-}
-
-fn main() {
-    low_voltage_check();
 }
