@@ -1,0 +1,17 @@
+.sensors-container {
+  height: 95%;
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sensorBox-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 75%;
+  flex-wrap: wrap;
+}

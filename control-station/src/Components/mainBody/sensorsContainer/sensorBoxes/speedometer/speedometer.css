@@ -1,0 +1,11 @@
+.gauge-container {
+  position: relative;
+  width: 70%; /* Make it 90% of the parent container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+canvas {
+  width: 85%; /* Make canvas width 100% of the container */
+}
