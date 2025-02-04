@@ -10,8 +10,8 @@ export default function SensorsContainer() {
     "Avg Pressure": ["Pneumatic Pressure", "Coolant Pressure"],
     "Distance": ["Track Height", "Position"],
     "Speed": ["Acceleraton"], 
-    "HV Voltage": [], 
-    "HV Current": [],
+    "HV Voltage": ["HV Batt #1", "HV Batt #2", "HV Batt #3", "HV Batt #4", "HV Batt #5", "HV Batt #6", "HV Batt #7", "LV Batt B"], 
+    "HV Current": ["HV Batt #1", "HV Batt #2", "HV Batt #3", "HV Batt #4", "HV Batt #5", "HV Batt #6", "HV Batt #7", "LV Batt B"],
   };
 
   type SensorType = keyof typeof sensorData; 
@@ -41,9 +41,9 @@ export default function SensorsContainer() {
         <div className="overlay" onClick={handleClose}>
           <div className="overlay-content" onClick={(e) => e.stopPropagation()}>
             <h2>{selectedSensor} Details</h2>
-            <div className="sensor-body">
+            <div className="overlay-body">
               {sensorData[selectedSensor].map((key, index) => (
-                <div key={index} className="sensor-log-item">
+                <div key={index} className="overlay-log-item">
                   <p>{key}: &emsp;  {"50"}</p>
                 </div>
               ))}
