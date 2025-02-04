@@ -1,0 +1,83 @@
+/* General console container */
+.console {
+  overflow-y: hidden;
+  height: 95%; /* Height of the console will stay fixed */
+  width: 35%; /* Increased width for better visibility */
+  background-color: #ffffff; /* White background */
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  padding: 20px;
+  font-family: "Courier New", Courier, monospace; /* Monospace font for console-like feel */
+  color: #333333; /* Dark grey text */
+}
+
+/* Header styling */
+.console h1 {
+  font-size: 2rem;
+  color: #333333; /* Greyish black text */
+  margin-bottom: 15px;
+}
+
+/* Body section for logs */
+.console-body {
+  max-height: calc(95% - 70px);
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Space between log lines */
+  max-height: 80%; /* Limit the height of the log container */
+  overflow-y: auto; /* Scrollable log area */
+  padding-right: 15px; /* Ensure content does not touch the scrollbar */
+  padding-bottom: 10px; /* To ensure the last log doesn't get cut off */
+}
+
+/* Styling for each log item */
+.log-item {
+  border-radius: 5px;
+  padding: 10px;
+  transition: background-color 0.3s ease-in-out; /* Smooth hover effect */
+}
+
+/* On hover, change background color for logs */
+.log-item:hover {
+  background-color: #e0e0e0; /* Slightly darker grey on hover */
+}
+
+/* Styling the log text */
+.console-body p {
+  position: relative;
+  display: inline-block;
+  font-size: 14px; /* Adjusted font size */
+  line-height: 1.5;
+  margin: 0;
+  color: #333333; /* Dark grey for the text */
+}
+
+/* Underline effect for the log */
+.console-body p::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 2px; /* Thicker underline */
+  background-color: #808080; /* Grey color for the underline */
+}
+
+/* Custom scrollbar */
+.console::-webkit-scrollbar {
+  width: 8px;
+}
+
+.console::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3); /* Dark grey scrollbar thumb */
+  border-radius: 5px;
+}
+
+.console::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.5); /* Darker grey on hover */
+}
