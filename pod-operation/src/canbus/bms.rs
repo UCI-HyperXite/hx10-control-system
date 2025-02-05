@@ -1,4 +1,4 @@
-use socketcan::{CanFrame, CanSocket, Socket};
+use socketcan::{CanSocket, Socket};
 use std::collections::HashMap;
 use std::time::Duration;
 use socketcan::{EmbeddedFrame, Id, StandardId}; // Import Id and StandardId for CAN IDs
