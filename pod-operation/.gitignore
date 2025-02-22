@@ -1,1 +1,9 @@
-/target
+# Ignore C and C++ build files
+/build/
+*.o
+*.so
+*.a
+*.out
+*.elf
+CMakeCache.txt
+CMakeFiles/
