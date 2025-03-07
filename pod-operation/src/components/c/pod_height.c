@@ -1,4 +1,3 @@
-#include "vl6180_pi.h"
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -6,6 +5,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+
+#include "../../../include/components/c/pod_height.h"
+#include "../../include/utils/gpio.h"
 
 
 

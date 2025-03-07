@@ -1,13 +1,21 @@
-#include "brakes.h"
-#include "gpio.h"
+#include <iostream>
+#include <stdio.h>
+// #include <wiringPi.h>
+#include "../../include/components/c/brakes.h"
+#include "../../include/utils/gpio.h"
 
-struct Brakes brake;
-brake->pin = PNEUMATICS_RELAY;
+struct Brakes brake;    
+
+void initializeBrakes(){
+    brake.pin = PNEUMATICS_RELAY;
+}
 
 void engage(int pin){
-    pinMode(pin, LOW);
+    printf("Brakes engaged\n");
+    setHigh(brake.pin);
 }
 
 void disengage(int pin){
-    pinMode(pin, HIGH);
+    printf("Brakes disengaged\n");
+    setLow(brake.pin);
 }

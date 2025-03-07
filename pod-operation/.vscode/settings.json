@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "iostream": "c",
+        "brakes.h": "c",
+        "gpio.h": "c",
+        "cassert": "c",
+        "stdio.h": "c"
+    }
+}

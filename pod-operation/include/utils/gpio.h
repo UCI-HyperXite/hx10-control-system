@@ -15,5 +15,7 @@ enum GPIOPins{
 };
 
 void initailizeGPIOs(void);
+void setHigh(int pin);
+void setLow(int pin);
 
 #endif

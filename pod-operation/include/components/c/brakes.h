@@ -1,13 +1,12 @@
 #ifndef BRAKES_H
-#define BRAKES
+#define BRAKES_H
 
 struct Brakes {
     int pin;
 };
 
-
+void initializeBrakes(void);
 void engage(int pin);
 void disengage(int pin);
-
 
 #endif
