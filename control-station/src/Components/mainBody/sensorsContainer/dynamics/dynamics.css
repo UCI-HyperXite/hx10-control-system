@@ -1,0 +1,21 @@
+.dynamics-container {
+  width: 90%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 25%;
+  background-color: white;
+  border-radius: 25px;
+}
+
+.dynamics-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.dynamics-data > img {
+  height: 60%;
+}
