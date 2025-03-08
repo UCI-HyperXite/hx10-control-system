@@ -1,9 +1,11 @@
 import "./controlPanel.css";
-import { useContext, useEffect, useState } from "react";
-import PodContext from "@/Services/PodContext";
+import { useContext, useEffect } from "react";
+import { PodContext } from "@/Services/PodContext";
 
 export default function ControlPanel() {
-  const { podSocketClient } = useContext(PodContext);
+
+  const {podSocketClient} = useContext(PodContext);
+
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {

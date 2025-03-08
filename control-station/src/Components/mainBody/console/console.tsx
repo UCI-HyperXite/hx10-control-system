@@ -4,8 +4,11 @@ import PodContext from "../../../Services/PodContext";
 import { MOCK_POD_DATA, PodData } from "@/Services/PodSocketClient";
 
 export default function Console() {
-  //const { podData } = useContext(PodContext);
-  const [podData, setPodData] = useState<PodData>(MOCK_POD_DATA);
+  const { podData } = useContext(PodContext);
+
+  useEffect(()=>{
+    console.log(podData.messages);
+  },[podData])
 
   useEffect(() => {
     console.log(podData);

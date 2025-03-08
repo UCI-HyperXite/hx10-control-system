@@ -194,30 +194,34 @@ class PodSocketClient {
   }
 
   sendLoad(): void {
+   this.addMessage("Pod in Load state", State.Load);
+
     this.socket.emit("load", (response: string) => {
       console.log("Server acknowledged:", response);
-      this.addMessage(response, State.Load);
     });
   }
 
   sendRun(): void {
+    this.addMessage("Pod in Run state", State.Running);
+
     this.socket.emit("run", (response: string) => {
       console.log("Server acknowledged:", response);
-      this.addMessage(response, State.Running);
     });
   }
 
   sendStop(): void {
+    this.addMessage("Pod in Stop state", State.Stopped);
+
     this.socket.emit("stop", (response: string) => {
       console.log("Server acknowledged:", response);
-      this.addMessage(response, State.Stopped);
     });
   }
 
   sendHalt(): void {
+    this.addMessage('Pod in Halt state', State.Halted);
+
     this.socket.emit("halt", (response: string) => {
       console.log("Server acknowledged:", response);
-      this.addMessage(response, State.Halted);
     });
   }
 
