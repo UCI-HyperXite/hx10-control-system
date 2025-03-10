@@ -1,40 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 import { PodContext } from "./PodContext";
-import PodSocketClient, { PodData, State } from "./PodSocketClient";
+import { PodData, State } from "./PodSocketClient";
+import PodSocketClient from "./PodSocketClient";
 
 interface PodProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const PodProvider: React.FC<PodProviderProps> = ({ children }) => {
-  // Initialize podData with default values (no mock data)
+const PodProvider: React.FC<PodProviderProps> = ({ children }) => {
   const [podData, setPodData] = useState<PodData>({
     connected: false,
     state: State.Disconnected,
-    gyroscope: {
-      pitch: 0,
-      roll: 0,
-      yaw: 0,
-    },
-    wheel_encoder: {
-      distance: 0,
-      velocity: 0,
-    },
+    gyroscope: { pitch: 0, roll: 0, yaw: 0 },
+    wheel_encoder: { distance: 0, velocity: 0 },
     acceleration: 0,
-    position: {
-      position: 0,
-      track_height: 0,
-    },
+    position: { position: 0, track_height: 0 },
     temperature: {
-      lim_temp: 0,
-      coolant_temp: 0,
-      ambient_temp: 0,
-      batt_temp: 0,
+      lim_temp: 25,
+      coolant_temp: 20,
+      ambient_temp: 22,
+      batt_temp: 30,
     },
-    pressure: {
-      pneumatic_press: 0,
-      coolant_press: 0,
-    },
+    pressure: { pneumatic_press: 0, coolant_press: 0 },
     voltage: {
       hv_batt1: 0,
       hv_batt2: 0,
@@ -61,10 +48,11 @@ export const PodProvider: React.FC<PodProviderProps> = ({ children }) => {
   const podSocketClient = new PodSocketClient(setPodData);
 
   useEffect(() => {
+    // Enable the socket connection when the component mounts
     podSocketClient.enable();
 
-    // Clean up socket client on component unmount
     return () => {
+      // Disable the socket connection when the component unmounts
       podSocketClient.disable();
     };
   }, [podSocketClient]);
@@ -75,3 +63,5 @@ export const PodProvider: React.FC<PodProviderProps> = ({ children }) => {
     </PodContext.Provider>
   );
 };
+
+export default PodProvider;

@@ -1,14 +1,13 @@
 import "./console.css";
 import { useContext, useEffect, useRef, useState } from "react";
-import PodContext from "../../../Services/PodContext";
-import { MOCK_POD_DATA, PodData } from "@/Services/PodSocketClient";
+import { PodContext } from "@/Services/PodContext";
 
 export default function Console() {
   const { podData } = useContext(PodContext);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(podData.messages);
-  },[podData])
+  }, [podData]);
 
   useEffect(() => {
     console.log(podData);
