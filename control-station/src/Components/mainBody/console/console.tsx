@@ -3,7 +3,13 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { PodContext } from "@/Services/PodContext";
 
 export default function Console() {
-  const { podData } = useContext(PodContext);
+  const context = useContext(PodContext);
+
+  if (!context) {
+    return <div>Error: PodContext is not available!</div>;
+  }
+
+  const { podData } = context;
 
   useEffect(() => {
     console.log(podData.messages);

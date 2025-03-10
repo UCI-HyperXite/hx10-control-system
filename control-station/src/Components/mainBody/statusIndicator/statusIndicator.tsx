@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "./statusIndicator.css";
-import { MOCK_POD_DATA, PodData } from "@/Services/PodSocketClient";
+import { PodContext } from "@/Services/PodContext";
 
 export default function StatusIndicator() {
   //const [status, setStatus] = useState("load");
-  const [podData, setPodData] = useState<PodData>(MOCK_POD_DATA);
+  const { podData } = useContext(PodContext);
 
   return (
     <div className="status-indicator">
