@@ -1,5 +1,5 @@
 import "./console.css";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect } from "react";
 import { PodContext } from "@/Services/PodContext";
 
 export default function Console() {
