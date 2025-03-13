@@ -6,6 +6,8 @@
 #include <iostream>
 #include <thread>
 #include <cmath>
+#include "include/components/cpp/gyro.hpp"
+#include "include/components/cpp/signal_light.hpp"
 
 namespace beast = boost::beast;
 namespace http = beast::http;

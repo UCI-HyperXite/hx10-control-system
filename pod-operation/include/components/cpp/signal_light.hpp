@@ -18,6 +18,12 @@
 #define RAINBOW_DELAY 2000000 
 
 uint32_t color_matrix[LED_NUMBER];
-uint32_t colorWheel(uint8_t pos);
+
+Timer timer;
+void setRed(uint32_t color_matrix[LED_NUMBER], int i);
+void setYellow(uint32_t color_matrix[LED_NUMBER], int i);
+void setGreen(uint32_t color_matrix[LED_NUMBER], int i);
+void sendBit(bool bit);
+void sendColors(uint32_t* colors);
 
 #endif
