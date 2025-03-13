@@ -3,12 +3,18 @@ import FrontPod from "@/assets/images/FrontPod 1.png";
 import TopPod from "@/assets/images/TopPod.png";
 import SidePod from "@/assets/images/SidePod 1.png";
 
-import { useState } from "react";
-import { MOCK_POD_DATA } from "@/Services/PodSocketClient";
-import { PodData } from "@/Services/PodSocketClient";
+import { useContext, useState } from "react";
+import { PodContext } from "@/Services/PodContext";
 
 export default function Dynamics() {
-  const [podData, setPodData] = useState<PodData>(MOCK_POD_DATA);
+  const context = useContext(PodContext);
+ 
+   if (!context) {
+     return <div>Error: PodContext is not available!</div>;
+   }
+ 
+   const { podData } = context;
+
   return (
     <div className="dynamics-container">
       <div className="dynamics-data">

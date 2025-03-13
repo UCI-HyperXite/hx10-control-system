@@ -4,7 +4,6 @@ import { PodContext } from "@/Services/PodContext";
 
 export default function StatusIndicator() {
   //const [status, setStatus] = useState("load");
-
   const context = useContext(PodContext);
 
   if (!context) {
@@ -13,12 +12,10 @@ export default function StatusIndicator() {
 
   const { podData } = context;
   return (
-    <div className="status-indicator">
+    <div className={`status-indicator ${podData.state.toLowerCase()}`}>
       <h3>Status</h3>
       <div className="status-text">
-        <span className={`status-color ${podData.state.toLowerCase()}`}>
-          {podData.state}
-        </span>
+        {podData.state}
       </div>
     </div>
   );

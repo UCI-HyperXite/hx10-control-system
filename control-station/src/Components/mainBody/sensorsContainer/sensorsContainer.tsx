@@ -2,12 +2,16 @@ import { useContext, useState, useMemo } from "react";
 import Dynamics from "./dynamics/dynamics";
 import SensorBox from "./sensorBoxes/sensorBox";
 import "./sensorsContainer.css";
-import PodContext from "@/Services/PodContext";
-import { MOCK_POD_DATA, PodData } from "@/Services/PodSocketClient";
+import { PodContext } from "@/Services/PodContext";
 
 export default function SensorsContainer() {
-  // const { podData } = useContext(PodContext);
-  const [podData, setPodData] = useState<PodData>(MOCK_POD_DATA);
+  const context = useContext(PodContext);
+ 
+   if (!context) {
+     return <div>Error: PodContext is not available!</div>;
+   }
+ 
+   const { podData } = context;
 
   const sensorData = {
     "Avg Temp": ["LIM Temp", "Coolant Temp", "Ambient Temp", "Batt Temp"],

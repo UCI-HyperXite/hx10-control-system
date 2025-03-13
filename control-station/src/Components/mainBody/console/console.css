@@ -1,8 +1,9 @@
 /* General console container */
 .console {
   overflow-y: hidden;
-  height: 95%; /* Height of the console will stay fixed */
-  width: 35%; /* Increased width for better visibility */
+  height: 95%; 
+  height: 500px; /* temp solution for expanded mainBody*/ 
+  width: 35%; 
   background-color: #ffffff; /* White background */
   text-align: center;
   border-radius: 10px;
@@ -29,7 +30,6 @@
   display: flex;
   flex-direction: column;
   gap: 5px; /* Space between log lines */
-  max-height: 80%; /* Limit the height of the log container */
   overflow-y: auto; /* Scrollable log area */
   padding-right: 15px; /* Ensure content does not touch the scrollbar */
   padding-bottom: 10px; /* To ensure the last log doesn't get cut off */
