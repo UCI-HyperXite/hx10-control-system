@@ -3,10 +3,12 @@
 
 struct Brakes {
     int pin;
+    void (*engage)(struct Brakes* self);
+    void (*disengage)(struct Brakes* self);
 };
 
-void initializeBrakes(void);
-void engage(int pin);
-void disengage(int pin);
+void initializeBrakes(struct Brakes* brake);
+void engage(struct Brakes* self);
+void disengage(struct Brakes* self);
 
 #endif
