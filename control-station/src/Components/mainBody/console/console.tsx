@@ -1,5 +1,5 @@
 import "./console.css";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { PodContext } from "@/Services/PodContext";
 
 export default function Console() {
@@ -10,15 +10,6 @@ export default function Console() {
   }
 
   const { podData } = context;
-
-  useEffect(() => {
-    console.log(podData.messages);
-  }, [podData]);
-
-  useEffect(() => {
-    console.log(podData);
-    console.log(podData?.messages);
-  }, [podData]);
 
   return (
     <div className="console">
