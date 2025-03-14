@@ -2,6 +2,8 @@
 #include <boost/beast/websocket.hpp>
 #include <boost/asio.hpp>
 #include <boost/json.hpp>
+// #include "../include/components/cpp/signal_light.hpp"
+#include "signal_light.hpp"
 #include <iostream>
 #include <future>
 #include <thread>
@@ -16,6 +18,18 @@ using tcp = net::ip::tcp;
 const int PORT = 8080;
 std::unordered_map<std::string, websocket::stream<tcp::socket>> clients;
 
+// Initialize SignalLight
+SignalLight signalLight;
+
+void update_led_strip(uint32_t color)
+{
+    for (int i = 0; i < LED_NUMBER; i++)
+    {
+        color_matrix[i] = color;
+    }
+    signalLight.sendColors(color_matrix);
+}
+
 void handle_message(websocket::stream<tcp::socket> &ws, const std::string &msg)
 {
     std::cout << "Received: " << msg << std::endl;
@@ -25,16 +39,19 @@ void handle_message(websocket::stream<tcp::socket> &ws, const std::string &msg)
     {
         response["status"] = "success";
         response["state"] = "Running";
+        update_led_strip(0x200000); // Green
     }
-    else if (msg == "stop")
+    else if (msg == "stop" || msg == "halt")
     {
         response["status"] = "success";
-        response["state"] = "Stopped";
+        response["state"] = msg == "stop" ? "Stopped" : "Halted";
+        update_led_strip(0x002000); // Red
     }
-    else if (msg == "halt")
+    else if (msg == "load")
     {
         response["status"] = "success";
-        response["state"] = "Halted";
+        response["state"] = "Loading";
+        update_led_strip(0x202000); // Yellow
     }
     else
     {
@@ -72,6 +89,12 @@ void handle_websocket(tcp::socket socket)
 
 int main()
 {
+    if (wiringPiSetup() == -1)
+    {
+        std::cerr << "WiringPi setup failed!" << std::endl;
+        return 1;
+    };
+    pinMode(LED_PIN, OUTPUT);
     try
     {
         net::io_context ioc;
