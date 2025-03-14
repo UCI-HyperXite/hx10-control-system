@@ -1,0 +1,3 @@
+[submodule "pod-operation/include/pod-operation/include/WiringPi"]
+	path = pod-operation/include/pod-operation/include/WiringPi
+	url = https://github.com/WiringPi/WiringPi.git

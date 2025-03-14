@@ -3,6 +3,7 @@
 #include <boost/asio.hpp>
 #include <boost/json.hpp>
 #include <iostream>
+#include <future>
 #include <thread>
 #include <unordered_map>
 

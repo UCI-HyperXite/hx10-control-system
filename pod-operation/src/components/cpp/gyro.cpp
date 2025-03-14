@@ -3,7 +3,7 @@
 // Licensed under the CC BY-NC SA 4.0
 
 // Include the header file for this class
-#include "MPU6050.h"
+#include "../../include/components/cpp/gyro.hpp"
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
