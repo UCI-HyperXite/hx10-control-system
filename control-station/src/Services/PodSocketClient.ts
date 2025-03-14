@@ -125,7 +125,7 @@ type SetPodData = Dispatch<SetStateAction<PodData>>;
 class PodSocketClient {
   socket: WebSocket | null = null;
   setPodData: SetPodData;
-  reconnectInterval = 5000; // 5-second reconnect interval
+  reconnectInterval = 5000;
 
   constructor(setPodData: SetPodData) {
     this.setPodData = setPodData;

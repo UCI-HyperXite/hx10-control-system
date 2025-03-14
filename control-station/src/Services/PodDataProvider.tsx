@@ -61,7 +61,10 @@ const PodProvider: React.FC<PodProviderProps> = ({ children }) => {
 
   return (
     <PodContext.Provider
-      value={{ podSocketClient: podSocketClientRef.current, podData }}
+      value={{
+        podSocketClient: podSocketClientRef.current as PodSocketClient,
+        podData,
+      }}
     >
       {children}
     </PodContext.Provider>
