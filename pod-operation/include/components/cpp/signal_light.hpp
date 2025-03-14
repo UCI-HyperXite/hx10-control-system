@@ -20,6 +20,7 @@
 uint32_t color_matrix[LED_NUMBER];
 
 Timer timer;
+SignalLight signallight;
 void setRed(uint32_t color_matrix[LED_NUMBER], int i);
 void setYellow(uint32_t color_matrix[LED_NUMBER], int i);
 void setGreen(uint32_t color_matrix[LED_NUMBER], int i);
