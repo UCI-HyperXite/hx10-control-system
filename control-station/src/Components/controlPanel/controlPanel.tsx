@@ -6,15 +6,14 @@ export default function ControlPanel() {
 
   const {podSocketClient} = useContext(PodContext);
 
-
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.code === "Space") {
         event.preventDefault(); // Prevents scrolling when spacebar is pressed
-        const stopButton = document.querySelector("#stop") as HTMLElement;
-        if (stopButton) {
-          stopButton.click();
-          console.log("stop pressed");
+        const haltButton = document.querySelector("#halt") as HTMLElement;
+        if (haltButton) {
+          haltButton.click();
+          console.log("halt pressed");
         }
       }
     };

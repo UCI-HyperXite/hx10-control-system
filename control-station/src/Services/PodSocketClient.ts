@@ -81,44 +81,44 @@ interface Current {
   lv_battb: number;
 }
 
-export const MOCK_POD_DATA: PodData = {
-  connected: true,
-  state: State.Running,
-  gyroscope: { pitch: 0, roll: 0, yaw: 0 },
-  wheel_encoder: { distance: 10, velocity: 50 },
-  acceleration: 0,
-  position: { position: 0, track_height: 0 },
-  temperature: {
-    lim_temp: 25,
-    coolant_temp: 20,
-    ambient_temp: 22,
-    batt_temp: 30,
-  },
-  pressure: { pneumatic_press: 100, coolant_press: 90 },
-  voltage: {
-    hv_batt1: 46,
-    hv_batt2: 45,
-    hv_batt3: 41,
-    hv_batt4: 42,
-    hv_batt5: 46,
-    hv_batt6: 45,
-    hv_batt7: 46,
-    lv_battb: 12,
-  },
-  current: {
-    hv_batt1: 10,
-    hv_batt2: 10,
-    hv_batt3: 10,
-    hv_batt4: 10,
-    hv_batt5: 10,
-    hv_batt6: 10,
-    hv_batt7: 10,
-    lv_battb: 2,
-  },
-  messages: [
-    { timestamp: new Date(), message: "Pod initialized successfully" },
-  ],
-};
+// export const MOCK_POD_DATA: PodData = {
+//   connected: true,
+//   state: State.Running,
+//   gyroscope: { pitch: 0, roll: 0, yaw: 0 },
+//   wheel_encoder: { distance: 10, velocity: 50 },
+//   acceleration: 0,
+//   position: { position: 0, track_height: 0 },
+//   temperature: {
+//     lim_temp: 25,
+//     coolant_temp: 20,
+//     ambient_temp: 22,
+//     batt_temp: 30,
+//   },
+//   pressure: { pneumatic_press: 100, coolant_press: 90 },
+//   voltage: {
+//     hv_batt1: 46,
+//     hv_batt2: 45,
+//     hv_batt3: 41,
+//     hv_batt4: 42,
+//     hv_batt5: 46,
+//     hv_batt6: 45,
+//     hv_batt7: 46,
+//     lv_battb: 12,
+//   },
+//   current: {
+//     hv_batt1: 10,
+//     hv_batt2: 10,
+//     hv_batt3: 10,
+//     hv_batt4: 10,
+//     hv_batt5: 10,
+//     hv_batt6: 10,
+//     hv_batt7: 10,
+//     lv_battb: 2,
+//   },
+//   messages: [
+//     { timestamp: new Date(), message: "Pod initialized successfully" },
+//   ],
+// };
 
 type SetPodData = Dispatch<SetStateAction<PodData>>;
 
