@@ -4,16 +4,54 @@
 // #include <boost/asio.hpp>
 // #include <boost/json.hpp>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <unistd.h>
+#include <iomanip>
+#include <sstream>
 #include <future>
 #include <thread>
 #include <cmath>
 
-#include "include/components/cpp/gyro.hpp"
-#include "include/components/cpp/signal_light.hpp"
+#include "seven_segment_display.hpp"
 
 std::future<void> main() {
     
 }
+
+void initializeDisplay(HT16K33& display, const std::string& label) {
+    const uint8_t brightness = 10;
+    const HT16K33::BlinkFreq_e blink = HT16K33::BlinkFreq_e::BlinkOff;
+    const uint8_t digits = 4;
+    const HT16K33::DisplayType_e type = HT16K33::DisplayType_e::SegType7;
+
+    display.DisplayInit(brightness, blink, digits, type);
+    display.DisplayOn();
+}
+
+void updateDisplay(HT16K33& display, const std::string& label) {
+    for (uint8_t pos = 0; pos < 4; ++pos) {
+        char randomChar = '0' + (std::rand() % 10);
+        rdlib::Return_Codes_e result = display.displayChar(pos, randomChar, HT16K33plus_Model1::DecimalPoint_e::DecPointOff);
+
+        if (result != rdlib::Success) {
+            std::cerr << label << ": Error displaying character at position "
+                      << static_cast<int>(pos) << ": Code "
+                      << display.DisplayI2CErrorGet() << std::endl;
+        }
+    }
+}
+
+int main() {
+    HT16K33 display(1, 0x70, 0);
+    initializeDisplay(display, "pressure");
+
+    while (true){
+        update Display(display, "pressure");
+    }
+
+}
+
 
 // namespace beast = boost::beast;
 // namespace http = beast::http;
