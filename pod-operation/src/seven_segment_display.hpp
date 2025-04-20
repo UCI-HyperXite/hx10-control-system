@@ -135,3 +135,4 @@ class HT16K33plus_Model1
 		static constexpr uint16_t _HT_DEC_POINT_14_MASK = 0x4000; /**<Mask to switch on 14 seg decimal point */
 
 };
+

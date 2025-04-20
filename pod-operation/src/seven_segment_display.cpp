@@ -1,4 +1,11 @@
+/*!
+	@file     HT16K33plus_Model1_RDL.cpp
+	@author   Gavin Lyons
+	@brief    Source file for for HT16K33 module. Model 1
+*/
+
 #include "seven_segment_display.hpp"
+
 
 /*!
 	@brief Constructor for class HT16K33plus_Model1
@@ -6,7 +13,7 @@
 	@param I2Caddress  The address of a device on the I2C bus. default is 0x70.
 	@param I2CFlags Flags which modify an I2C open command. None are currently defined.
 */
-HT16K33::HT16K33(int I2CDevice, int I2Caddress, int I2CFlags) 
+HT16K33plus_Model1::HT16K33plus_Model1(int I2CDevice, int I2Caddress, int I2CFlags) 
 {
 	_I2CDevice = I2CDevice;
 	_I2CAddress = I2Caddress;
@@ -19,7 +26,7 @@ HT16K33::HT16K33(int I2CDevice, int I2Caddress, int I2CFlags)
 	@param length length of data to send
 	@note if debug flag is true, will output data on I2C failures.
 */
-void HT16K33::SendData(const unsigned char* data, size_t length) {
+void HT16K33plus_Model1::SendData(const unsigned char* data, size_t length) {
 	
 	uint8_t AttemptCount = _I2C_ErrorRetryNum;
 	int ErrorCode = Display_RDL_I2C_WRITE(_I2CHandle, reinterpret_cast<const char*>(data), length);
@@ -44,7 +51,7 @@ void HT16K33::SendData(const unsigned char* data, size_t length) {
 	@param cmd command byte
 	@note if debug flag == true  ,will output data on I2C failures.
 */
-void HT16K33::SendCmd(uint8_t cmd) {
+void HT16K33plus_Model1::SendCmd(uint8_t cmd) {
 
 	char cmdBufferI2C[1];
 	cmdBufferI2C[0] = cmd;
@@ -74,7 +81,7 @@ void HT16K33::SendCmd(uint8_t cmd) {
 		-# rdlib::Success
 		-# rdlib::I2CbeginFail
 */
-rdlib::Return_Codes_e HT16K33::Display_I2C_ON(void)
+rdlib::Return_Codes_e HT16K33plus_Model1::Display_I2C_ON(void)
 {
 	int I2COpenHandle = 0;
 	I2COpenHandle = Display_RDL_I2C_OPEN(_I2CDevice, _I2CAddress, _I2CFlags);
@@ -96,7 +103,7 @@ rdlib::Return_Codes_e HT16K33::Display_I2C_ON(void)
 		-# rdlib::Success
 		-# rdlib::I2CcloseFail
 */
-rdlib::Return_Codes_e HT16K33::Display_I2C_OFF(void)
+rdlib::Return_Codes_e HT16K33plus_Model1::Display_I2C_OFF(void)
 {
 	int I2CCloseHandleStatus = 0;
 
@@ -114,14 +121,14 @@ rdlib::Return_Codes_e HT16K33::Display_I2C_OFF(void)
 	@details See Error Codes at bottom of https://abyz.me.uk/lg/lgpio.html
 	@return I2C error flag
 */
-int HT16K33::DisplayI2CErrorGet(void) const { return _I2C_ErrorFlag;}
+int HT16K33plus_Model1::DisplayI2CErrorGet(void) const { return _I2C_ErrorFlag;}
 
 /*!
 	@brief Sets the I2C timeout, in the event of an I2C write error
 	@param newTimeout I2C timeout delay in mS
 	@details Delay between retry attempts in event of an error , mS
 */
-void HT16K33::DisplayI2CErrorTimeoutSet(uint16_t newTimeout)
+void HT16K33plus_Model1::DisplayI2CErrorTimeoutSet(uint16_t newTimeout)
 {
 	_I2C_ErrorDelay = newTimeout;
 }
@@ -131,21 +138,21 @@ void HT16K33::DisplayI2CErrorTimeoutSet(uint16_t newTimeout)
 	@details Delay between retry attempts in event of an error , mS
 	@return  I2C timeout delay in mS, _I2C_ErrorDelay
 */
-uint16_t HT16K33::DisplayI2CErrorTimeoutGet(void) const{return _I2C_ErrorDelay;}
+uint16_t HT16K33plus_Model1::DisplayI2CErrorTimeoutGet(void) const{return _I2C_ErrorDelay;}
 
 /*!
 	@brief Gets the I2C error retry attempts, used in the event of an I2C write error
 	@details Number of times to retry in event of an error
 	@return   _I2C_ErrorRetryNum
 */
-uint8_t HT16K33::DisplayI2CErrorRetryNumGet(void) const {return _I2C_ErrorRetryNum;}
+uint8_t HT16K33plus_Model1::DisplayI2CErrorRetryNumGet(void) const {return _I2C_ErrorRetryNum;}
 
 /*!
 	@brief Sets the I2C error retry attempts used in the event of an I2C write error
 	@details Number of times to retry in event of an error
 	@param AttemptCount I2C retry attempts
 */
-void HT16K33::DisplayI2CErrorRetryNumSet(uint8_t AttemptCount)
+void HT16K33plus_Model1::DisplayI2CErrorRetryNumSet(uint8_t AttemptCount)
 {
 	_I2C_ErrorRetryNum = AttemptCount;
 }
@@ -156,7 +163,7 @@ void HT16K33::DisplayI2CErrorRetryNumSet(uint8_t AttemptCount)
 	@note Error codes are here https://abyz.me.uk/lg/lgpio.html
 		prints error code text to console
 */
-int HT16K33::DisplayCheckConnection(void)
+int HT16K33plus_Model1::DisplayCheckConnection(void)
 {
 	char rxdatabuf[1]; //buffer to hold return byte
 	int I2CReadStatus = 0;
@@ -178,7 +185,7 @@ int HT16K33::DisplayCheckConnection(void)
 	@param numOfDigits Number of digits to be displayed.
 	@param displayType Type of display configuration (enumeration DisplayType_e 4 settings).
 */
-void HT16K33::DisplayInit(uint8_t brightLevel, BlinkFreq_e  blinklevel, uint8_t numOfDigits, DisplayType_e displayType)
+void HT16K33plus_Model1::DisplayInit(uint8_t brightLevel, BlinkFreq_e  blinklevel, uint8_t numOfDigits, DisplayType_e displayType)
 {
 	SendCmd(HT16K33_NORMAL); //normal operation mode
 	SendCmd(HT16K33_BRIGHTNESS + brightLevel);//brightness level
@@ -197,28 +204,28 @@ void HT16K33::DisplayInit(uint8_t brightLevel, BlinkFreq_e  blinklevel, uint8_t 
 	@brief Turns on the display with the previously set blink setting.
 	@details Sends the command to enable the display, using the stored blink setting.
 */
-void HT16K33::DisplayOn(void){
+void HT16K33plus_Model1::DisplayOn(void){
 	SendCmd(HT16K33_DISPLAYON | _blinkSetting);
 }
 
 /*!
 	@brief Turns off the display.
 */
-void HT16K33::DisplayOff(void){
+void HT16K33plus_Model1::DisplayOff(void){
 	SendCmd(HT16K33_DISPLAYOFF);
 }
 
 /*!
 	@brief Puts the display into standby mode. Turn off System oscillator
 */
-void HT16K33::DisplaySleep(void){
+void HT16K33plus_Model1::DisplaySleep(void){
 	SendCmd(HT16K33_STANDBY);
 }
 
 /*!
 	@brief Restores the display to normal operation mode. Turn on System oscillator
 */
-void HT16K33::DisplayNormal(void){
+void HT16K33plus_Model1::DisplayNormal(void){
 	SendCmd(HT16K33_NORMAL);
 }
 
@@ -227,7 +234,7 @@ void HT16K33::DisplayNormal(void){
 	@details This function restores normal operation mode, sets brightness to a default level of 7,
 	         and turns the display on with the stored blink setting.
 */
-void HT16K33::DisplayResetDefault(void){
+void HT16K33plus_Model1::DisplayResetDefault(void){
 	DisplayNormal();
 	setBrightness(7);
 	DisplayOn();
@@ -238,7 +245,7 @@ void HT16K33::DisplayResetDefault(void){
 	@brief Sets the display blink frequency.
 	@param blinklevel Blink frequency setting (enumeration BlinkFreq_e 4 settings).
 */
-void HT16K33::setBlink( BlinkFreq_e  blinklevel){
+void HT16K33plus_Model1::setBlink( BlinkFreq_e  blinklevel){
 	_blinkSetting = blinklevel;
 	SendCmd(HT16K33_DISPLAYON | _blinkSetting );
 }
@@ -247,7 +254,7 @@ void HT16K33::setBlink( BlinkFreq_e  blinklevel){
 	@brief Gets the current blink frequency setting.
 	@returns The current blink frequency (enumeration BlinkFreq_e).
 */
-HT16K33::BlinkFreq_e HT16K33::getBlink() const{
+HT16K33plus_Model1::BlinkFreq_e HT16K33plus_Model1::getBlink() const{
 	return  _blinkSetting;
 }
 
@@ -255,7 +262,7 @@ HT16K33::BlinkFreq_e HT16K33::getBlink() const{
 	@brief Gets the display type.
 	@returns The current display type setting (enumeration DisplayType_e).
 */
-HT16K33::DisplayType_e HT16K33::getDisplayType() const{
+HT16K33plus_Model1::DisplayType_e HT16K33plus_Model1::getDisplayType() const{
 	return  _displayType;
 }
 
@@ -263,7 +270,7 @@ HT16K33::DisplayType_e HT16K33::getDisplayType() const{
 	@brief Sets the display brightness level.
 	@param value Brightness level (0-15). If greater than 15, it defaults to 15.
 */
-void HT16K33::setBrightness(uint8_t value)
+void HT16K33plus_Model1::setBrightness(uint8_t value)
 {
 	if (value == _brightness) 
 		return;
@@ -279,7 +286,7 @@ void HT16K33::setBrightness(uint8_t value)
 	@brief Gets the current brightness level.
 	@returns The current brightness level (0-15).
 */
-uint8_t HT16K33::getBrightness() const{
+uint8_t HT16K33plus_Model1::getBrightness() const{
 	return _brightness;
 }
 
@@ -294,7 +301,7 @@ uint8_t HT16K33::getBrightness() const{
 	         Otherwise, the function retrieves the 7-segment font data, applies the decimal point if needed, 
 	         and sends the data to the display.
 */
-rdlib::Return_Codes_e HT16K33::displayChar(uint8_t digitPosition, char character, DecimalPoint_e decimalOnPoint)
+rdlib::Return_Codes_e HT16K33plus_Model1::displayChar(uint8_t digitPosition, char character, DecimalPoint_e decimalOnPoint)
 {
 	if (character <= (_HT_ASCIIOffset-1) || character >= _HT_ASCIIEnd)
 	{// check ASCII font bounds
@@ -326,7 +333,7 @@ rdlib::Return_Codes_e HT16K33::displayChar(uint8_t digitPosition, char character
 	         The decimal point is applied if applicable.
 	         The processed data is then sent to the display.
 */
-rdlib::Return_Codes_e HT16K33::displayMultiSegNum(uint8_t digitPosition, char character, DecimalPoint_e decimalOnPoint)
+rdlib::Return_Codes_e HT16K33plus_Model1::displayMultiSegNum(uint8_t digitPosition, char character, DecimalPoint_e decimalOnPoint)
 {
 	uint16_t characterConverted;
 	switch (_displayType)
@@ -363,7 +370,7 @@ rdlib::Return_Codes_e HT16K33::displayMultiSegNum(uint8_t digitPosition, char ch
 	@details This function allows direct control of the display segments by sending raw data.
 	         The rawData value is split into two bytes and transmitted to the display.
 */
-void HT16K33::displayRawData(uint8_t digitPosition, uint16_t rawData)
+void HT16K33plus_Model1::displayRawData(uint8_t digitPosition, uint16_t rawData)
 {
 	uint8_t txDataBuffer[3];
 	size_t bufferLength = sizeof(txDataBuffer); 
@@ -378,7 +385,7 @@ void HT16K33::displayRawData(uint8_t digitPosition, uint16_t rawData)
 	@details Iterates through all digit positions and replaces each character with a blank space.
 	         The decimal points are also turned off.
 */
-void HT16K33::ClearDigits(void)
+void HT16K33plus_Model1::ClearDigits(void)
 {
 	for(uint8_t i=0; i<=_numOfDigits; i++) 
 	{
@@ -395,7 +402,7 @@ void HT16K33::ClearDigits(void)
 		user can add them to string before hand.
 	@return WIll return error for null pointer string or leading zeros option requested
 */
-rdlib::Return_Codes_e HT16K33::displayText(const char *text, TextAlignment_e TextAlignment) {
+rdlib::Return_Codes_e HT16K33plus_Model1::displayText(const char *text, TextAlignment_e TextAlignment) {
 	if (text == nullptr) {
 		fprintf(stderr, "Error: displayText: String is a null pointer.\n");
 		return rdlib::CharArrayNullptr;
@@ -447,7 +454,7 @@ rdlib::Return_Codes_e HT16K33::displayText(const char *text, TextAlignment_e Tex
 		"abc.def" will be shown as "abcdef" with c decimal point turned on,
 		Unless the Display is sixteen segment.
 */
-rdlib::Return_Codes_e HT16K33::displayText(const char *text) {
+rdlib::Return_Codes_e HT16K33plus_Model1::displayText(const char *text) {
 	// Check for null pointer
 	if (text == nullptr) 
 	{
@@ -474,7 +481,7 @@ rdlib::Return_Codes_e HT16K33::displayText(const char *text) {
 	@param hex  hexadecimal  value (DEC) 0-15  (0x00 - 0x0F)
 	@return Will return an error if not hexadecimal.
 */
-rdlib::Return_Codes_e  HT16K33::displayHexChar(uint8_t position, char hex) 
+rdlib::Return_Codes_e  HT16K33plus_Model1::displayHexChar(uint8_t position, char hex) 
 {
 		if (hex <= '9')
 		{
@@ -506,7 +513,7 @@ rdlib::Return_Codes_e  HT16K33::displayHexChar(uint8_t position, char hex)
 	@param TextAlignment enum text alignment, left or right alignment or leading zeros
 	@return will return error user tries to display  if too much data
 */
-rdlib::Return_Codes_e HT16K33::displayIntNum(int32_t number, TextAlignment_e TextAlignment)
+rdlib::Return_Codes_e HT16K33plus_Model1::displayIntNum(int32_t number, TextAlignment_e TextAlignment)
 {
 	// Ensure the number can fit within the display
 	if (number >= pow(10, _numOfDigits) || number < -(pow(10, (_numOfDigits-1)))) {
@@ -544,7 +551,7 @@ rdlib::Return_Codes_e HT16K33::displayIntNum(int32_t number, TextAlignment_e Tex
 	         If the total number of required digits (integer + fractional + sign) exceeds the available display space,
 	         an error is returned. Leading zero alignment is not supported.
 */
-rdlib::Return_Codes_e HT16K33::displayFloatNum(float number, TextAlignment_e TextAlignment, uint8_t fractionDigits)
+rdlib::Return_Codes_e HT16K33plus_Model1::displayFloatNum(float number, TextAlignment_e TextAlignment, uint8_t fractionDigits)
 {
 	if (TextAlignment == AlignRightZeros){
 			fprintf(stderr, "Error: displayFloatNum 2: Leading zeros not an option\n");
