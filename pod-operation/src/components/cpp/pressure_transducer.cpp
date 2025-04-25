@@ -1,63 +1,68 @@
 #include <iostream>
-#include <unistd.h>
+#include <unistd.h> // for usleep
 #include "src/ina219.h"
 
-#define INA219_UPSTREAM_ADDRESS 0x40
-#define INA219_DOWNSTREAM_ADDRESS 0x41
-
-class Reference
+// This struct helps convert current (mA) to pressure (PSI)
+struct Reference
 {
-public:
     float pressure_lo;
     float pressure_span;
     float current_lo;
     float current_span;
 
-    Reference(float pressure_lo, float pressure_hi, float current_lo, float current_hi)
-        : pressure_lo(pressure_lo), current_lo(current_lo),
-          pressure_span(pressure_hi - pressure_lo), current_span(current_hi - current_lo) {}
+    Reference(float plo, float phi, float clo, float chi)
+        : pressure_lo(plo), pressure_span(phi - plo),
+          current_lo(clo), current_span(chi - clo) {}
 
     static Reference upstream() { return Reference(0.0f, 5000.0f, 4.0f, 20.0f); }
     static Reference downstream() { return Reference(0.0f, 300.0f, 4.0f, 20.0f); }
 };
 
+// This class ties together INA219 + Reference
 class PressureTransducer
 {
-private:
-    INA219 ina;
-    Reference ref_values;
-
 public:
-    PressureTransducer(uint8_t address, Reference ref)
-        : ina(address), ref_values(ref)
+    INA219 sensor;
+    Reference ref;
+    static constexpr float scaling_value = 160.0f; // scaling from datasheet
+
+    PressureTransducer(float shunt_ohms, float max_expected_amps, uint8_t address, Reference ref_values)
+        : sensor(shunt_ohms, max_expected_amps, address), ref(ref_values)
     {
-        ina.configure(RANGE_16V, GAIN_8_320MV, ADC_12BIT, ADC_12BIT);
+        sensor.configure(RANGE_16V, GAIN_8_320MV, ADC_12BIT, ADC_12BIT);
+        sensor.set_calibration(0xFFFF); // manually set calibration
     }
 
-    static PressureTransducer upstream() { return PressureTransducer(INA219_UPSTREAM_ADDRESS, Reference::upstream()); }
-    static PressureTransducer downstream() { return PressureTransducer(INA219_DOWNSTREAM_ADDRESS, Reference::downstream()); }
-
-    float readPressure()
+    float read_current()
     {
-        float current = ina.current(); // Use library’s current() method
-        return ref_values.pressure_lo + ref_values.pressure_span * (current - ref_values.current_lo) / ref_values.current_span;
+        return sensor.current() / scaling_value;
+    }
+
+    float read_pressure()
+    {
+        float current_mA = read_current();
+        return ref.pressure_lo + ref.pressure_span * (current_mA - ref.current_lo) / ref.current_span;
     }
 };
 
 int main()
 {
-    PressureTransducer upstream_sensor = PressureTransducer::upstream();
-    PressureTransducer downstream_sensor = PressureTransducer::downstream();
+    float SHUNT_OHMS = 0.1f;
+    float MAX_EXPECTED_AMPS = 3.2f;
 
-    std::cout << "time_s,upstream_pressure,downstream_pressure" << std::endl;
+    PressureTransducer upstream(SHUNT_OHMS, MAX_EXPECTED_AMPS, 0x40, Reference::upstream());
+    PressureTransducer downstream(SHUNT_OHMS, MAX_EXPECTED_AMPS, 0x41, Reference::downstream());
 
-    for (int t = 0; t < 5; ++t)
+    std::cout << "time_s,upstream_pressure_PSI,downstream_pressure_PSI" << std::endl;
+
+    int c = 0;
+    while (c < 5)
     {
-        float up_p = upstream_sensor.readPressure();
-        float down_p = downstream_sensor.readPressure();
-
-        std::cout << t << "," << up_p << "," << down_p << std::endl;
-        usleep(1000000);
+        std::cout << c << ","
+                  << upstream.read_pressure() << ","
+                  << downstream.read_pressure() << std::endl;
+        c++;
+        usleep(1000000); // 1 second delay
     }
 
     return 0;
