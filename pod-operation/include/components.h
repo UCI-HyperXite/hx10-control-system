@@ -8,3 +8,10 @@
 #include "components/cpp/high_voltage_system.hpp"
 #include "components/cpp/inverter.hpp"
 #include "components/cpp/signal_light.hpp"
+
+
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+void readGyro(MPU6050* gyro);
