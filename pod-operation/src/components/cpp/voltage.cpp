@@ -1,9 +1,10 @@
 #include <iostream>
 #include "Adafruit_ADS1015.h" // This will use ADS1115 by default
 #include <thread>
+#define ADS_I2C_ADDRESS 0x4B
 
 // Create an instance of the ADS1115
-Adafruit_ADS1115 ads(0x48); // Default I2C address
+Adafruit_ADS1115 ads(ADS_I2C_ADDRESS); // Default I2C address
 
 // Gain settings (change depending on your expected voltage range)
 adsGain_t GAIN = GAIN_TWOTHIRDS; // ±6.144V
@@ -29,21 +30,33 @@ float readDifferentialVoltage(uint8_t ainp, uint8_t ainm) {
     int16_t raw;
 
     if (ainp == 0 && ainm == 1) {
+	std::cout << "Differential voltage (A0 - A1):" << std::endl;
         raw = ads.readADC_Differential_0_1();
     } else if (ainp == 2 && ainm == 3) {
+	std::cout << "Differential voltage (A2 - A3):" << std::endl;
         raw = ads.readADC_Differential_2_3();
     } else {
         std::cerr << "Unsupported differential pair. Use (0,1) or (2,3)." << std::endl;
-        return NAN;
+        return -1;
     }
 
     return rawToVoltage(raw, GAIN);
 }
 
-/// @returns current in amperes given voltage (V) and resistance (Ω)
-float currentFromVoltageAndResistance(float voltage, float resistance) {
-    // I = V / R
-    return voltage / resistance;
+// Reads single ended voltage 
+float readSingleVoltage(uint8_t channel){
+    if (channel < 0 || channel > 3){
+	std::cerr << "Invalid channel. Must be 0-3." << std::endl;
+    }
+
+    int16_t raw = ads.readADC_SingleEnded(channel);
+    return rawToVoltage(raw, GAIN); 
+}
+
+// resistance (Ω) given voltage and current
+float resistatanceFromVoltageAndCurrent(float voltage, float current){
+    //calculate resistance 
+    return 0.0;
 }
 
 int main() {
@@ -51,13 +64,22 @@ int main() {
     ads.begin();
 
     while (true) {
-        float voltage = readDifferentialVoltage(0, 1);
-        std::cout << "Differential voltage (A0 - A1): " << voltage << " V" << std::endl;
-        delay(1000); // 1 second delay
+        float voltage = readDifferentialVoltage(2, 3);
+	std::cout << "Output voltage: " << voltage << " V" << std::endl;
+
+	//float v0 = readSingleVoltage(0);
+	//float v1 = readSingleVoltage(1);
+	//float v2 = readSingleVoltage(2);
+	//float v3 = readSingleVoltage(3);
+
+	//std::cout << "A0 Voltage: " << v0 << " V" << std::endl;
+	//std::cout << "A1 Voltage: " << v1 << " V" << std::endl;
+	//std::cout << "A2 Voltage: " << v2 << " V" << std::endl;
+	//std::cout << "A3 Voltage: " << v3 << " V" << std::endl;
+	
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000)); 
     }
 
     return 0;
 }
-
-
-  
