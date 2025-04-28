@@ -1,11 +1,4 @@
-/*!
-	@file     HT16K33plus_Model1_RDL.cpp
-	@author   Gavin Lyons
-	@brief    Source file for for HT16K33 module. Model 1
-*/
-
 #include "seven_segment_display.hpp"
-
 
 /*!
 	@brief Constructor for class HT16K33plus_Model1

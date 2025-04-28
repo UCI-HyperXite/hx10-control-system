@@ -2,7 +2,10 @@
 #include "gpio.h"
 
 struct Brakes brake;
-brake->pin = PNEUMATICS_RELAY;
+
+void initializeBrakes(int pin){
+    brake.pin = pin;
+}
 
 void engage(int pin){
     pinMode(pin, LOW);

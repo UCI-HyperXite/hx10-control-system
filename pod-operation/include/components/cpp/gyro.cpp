@@ -3,7 +3,7 @@
 // Licensed under the CC BY-NC SA 4.0
 
 // Include the header file for this class
-#include "../../include/components/cpp/gyro.hpp"
+#include "gyro.hpp"
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>

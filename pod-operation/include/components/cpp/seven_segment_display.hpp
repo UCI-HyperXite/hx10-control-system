@@ -1,13 +1,3 @@
-/*!
-	@file   HT16K33plus_Model1_RDL.hpp
-	@author Gavin Lyons
-	@brief  Header file for for HT16k33 module. Model 1
-	@todo
-			-# hexadecimal string & number function,
-			-# keyscan,
-			-# leading zeros option to float and string function.
-*/
-
 #pragma once
 
 #include <stdint.h>
@@ -135,4 +125,3 @@ class HT16K33plus_Model1
 		static constexpr uint16_t _HT_DEC_POINT_14_MASK = 0x4000; /**<Mask to switch on 14 seg decimal point */
 
 };
-

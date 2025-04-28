@@ -1,4 +1,4 @@
-#include "../../include/components/cpp/signal_light.hpp"
+#include "signal_light.hpp"
 
 class Timer
 {
