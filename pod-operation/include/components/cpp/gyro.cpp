@@ -15,6 +15,8 @@ extern "C"
 }
 // #include <i2c/smbus.h>
 
+std::mutex i2c_mutex;
+
 MPU6050::MPU6050(int8_t addr, bool run_update_thread)
 {
 	int status;
@@ -69,6 +71,7 @@ void MPU6050::getGyroRaw(float *roll, float *pitch, float *yaw)
 
 void MPU6050::getGyro(float *roll, float *pitch, float *yaw)
 {
+	std::lock_guard<std::mutex> lock(i2c_mutex);
 	getGyroRaw(roll, pitch, yaw);									// Store raw values into variables
 	*roll = round((*roll - G_OFF_X) * 1000.0 / GYRO_SENS) / 1000.0; // Remove the offset and divide by the gyroscope sensetivity (use 1000 and round() to round the value to three decimal places)
 	*pitch = round((*pitch - G_OFF_Y) * 1000.0 / GYRO_SENS) / 1000.0;
@@ -87,6 +90,7 @@ void MPU6050::getAccelRaw(float *x, float *y, float *z)
 
 void MPU6050::getAccel(float *x, float *y, float *z)
 {
+	std::lock_guard<std::mutex> lock(i2c_mutex);
 	getAccelRaw(x, y, z);									   // Store raw values into variables
 	*x = round((*x - A_OFF_X) * 1000.0 / ACCEL_SENS) / 1000.0; // Remove the offset and divide by the accelerometer sensetivity (use 1000 and round() to round the value to three decimal places)
 	*y = round((*y - A_OFF_Y) * 1000.0 / ACCEL_SENS) / 1000.0;
