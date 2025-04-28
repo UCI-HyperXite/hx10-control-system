@@ -5,12 +5,13 @@ struct HighVoltageSystem highVoltageSystem;
 
 void initializeHighVoltageSystem(int pin){
     highVoltageSystem.pin = pin;
+    pinMode(pin, OUTPUT);
 }
 
 void engageContactors(int pin){
-    pinMode(pin, LOW);
+    digitalWrite(pin, HIGH);
 }
 
 void disengageContactors(int pin){
-    pinMode(pin, HIGH);
+    digitalWrite(pin, LOW);
 }

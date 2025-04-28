@@ -1,7 +1,3 @@
-//-------------------------------MPU6050 Accelerometer and Gyroscope C++ library-----------------------------
-// Copyright (c) 2019, Alex Mous
-// Licensed under the CC BY-NC SA 4.0
-
 //-----------------------MODIFY THESE PARAMETERS-----------------------
 
 #define GYRO_RANGE 0 // Select which gyroscope range to use (see the table below) - Default is 0
