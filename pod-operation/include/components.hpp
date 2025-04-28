@@ -14,4 +14,10 @@
 #include <thread>
 #include <chrono>
 
+extern "C" {
+    #include "pod_height.h"
+}
+
 void readGyro(MPU6050* gyro);
+
+void readPodHeight(vl6180* pod_height);
