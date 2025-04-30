@@ -1,6 +1,8 @@
 #include <iostream>
-#include "Adafruit_ADS1015.h" // This will use ADS1115 by default
+#include "Adafruit_ADS1015.h" 
 #include <thread>
+#include <cmath>
+
 #define ADS_I2C_ADDRESS 0x4B
 
 // Create an instance of the ADS1115
@@ -54,9 +56,23 @@ float readSingleVoltage(uint8_t channel){
 }
 
 // resistance (Ω) given voltage and current
-float resistatanceFromVoltageAndCurrent(float voltage, float current){
-    //calculate resistance 
-    return 0.0;
+float getThermistorResistance(float v_out, float v_in = 5.0f) {
+    float R_fixed = 10000.0f;  // R1
+    if (v_out <= 0.0f || v_out >= v_in) return -1.0f;  // Avoid division by 0 or invalid ratios
+    return (v_out * R_fixed) / (v_in - v_out);  // R2
+}
+
+// temperature (C) measured by thermistor given resistance (Ω) 
+float getThermistorTemperator(float resistance){
+    float beta_value = 3950.0f;     // material constant for NRL3104F3950B1F
+    float nominal_resistance = 10000.0f;    // ohms (Ω)
+    float reference_temp = 298.15f;     // Kelvin (K)
+
+    float temp_kelvin = beta_value / (std::log(resistance / nominal_resistance) + (beta_value / reference_temp));
+    float temp_celsius = temp_kelvin - 273.15f;
+
+    return temp_celsius;
+
 }
 
 int main() {
@@ -65,17 +81,23 @@ int main() {
 
     while (true) {
         float voltage = readDifferentialVoltage(2, 3);
-	std::cout << "Output voltage: " << voltage << " V" << std::endl;
+	    std::cout << "Voltage: " << voltage << " V" << std::endl;
 
-	//float v0 = readSingleVoltage(0);
-	//float v1 = readSingleVoltage(1);
-	//float v2 = readSingleVoltage(2);
-	//float v3 = readSingleVoltage(3);
+        float resistance = getThermistorResistance(voltage);
+        std::cout << "Thermistor resistance: " << resistance << " Ω" << std::endl;
 
-	//std::cout << "A0 Voltage: " << v0 << " V" << std::endl;
-	//std::cout << "A1 Voltage: " << v1 << " V" << std::endl;
-	//std::cout << "A2 Voltage: " << v2 << " V" << std::endl;
-	//std::cout << "A3 Voltage: " << v3 << " V" << std::endl;
+        float temperature = getThermistorTemperator(resistance);
+        std::cout << "Temperature: " << temperature << " C" << std::endl;
+
+        //float v0 = readSingleVoltage(0);
+        //float v1 = readSingleVoltage(1);
+        //float v2 = readSingleVoltage(2);
+        //float v3 = readSingleVoltage(3);
+
+        //std::cout << "A0 Voltage: " << v0 << " V" << std::endl;
+        //std::cout << "A1 Voltage: " << v1 << " V" << std::endl;
+        //std::cout << "A2 Voltage: " << v2 << " V" << std::endl;
+        //std::cout << "A3 Voltage: " << v3 << " V" << std::endl;
 	
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000)); 
