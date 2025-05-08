@@ -14,6 +14,7 @@
 
 #include "gyro.hpp"
 extern "C" {
+    #include "ina219.h"
     #include "pod_height.h"
 }
 
@@ -21,3 +22,5 @@ extern "C" {
 void readGyro(MPU6050* gyro);
 
 void readPodHeight(vl6180* pod_height);
+
+void readPneumaticPressure(ina219* pressure_transducer);
