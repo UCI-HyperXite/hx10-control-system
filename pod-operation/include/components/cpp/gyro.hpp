@@ -1,4 +1,6 @@
 //-----------------------MODIFY THESE PARAMETERS-----------------------
+#ifndef GYRO_HPP
+#define GYRO_HPP
 
 #define GYRO_RANGE 0 // Select which gyroscope range to use (see the table below) - Default is 0
 //	Gyroscope Range
@@ -108,3 +110,5 @@ public:
 	int getAngle(int axis, float *result);
 	bool calc_yaw;
 };
+
+#endif

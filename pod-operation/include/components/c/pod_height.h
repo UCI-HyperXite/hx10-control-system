@@ -1,3 +1,6 @@
+#ifndef PODHEIGHT_H
+#define PODHEIGHT_H
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -66,4 +69,6 @@ extern "C"
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

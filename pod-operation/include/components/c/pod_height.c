@@ -20,6 +20,7 @@ int read_byte(vl6180 handle, int reg){
     return data_read[0];
 }
 
+
 int read_two_bytes(vl6180 handle, int reg){
     char data_write[2];
     char data_read[2];

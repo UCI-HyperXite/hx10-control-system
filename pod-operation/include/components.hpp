@@ -4,19 +4,19 @@
 #include "components/c/pressure_transducer.h"
 #include "components/c/wheel_encoder.h"
 #include "components/c/yaw.h"
-#include "components/cpp/gyro.hpp"
 #include "components/cpp/high_voltage_system.hpp"
 #include "components/cpp/inverter.hpp"
 #include "components/cpp/signal_light.hpp"
-
 
 #include <iostream>
 #include <thread>
 #include <chrono>
 
+#include "gyro.hpp"
 extern "C" {
     #include "pod_height.h"
 }
+
 
 void readGyro(MPU6050* gyro);
 

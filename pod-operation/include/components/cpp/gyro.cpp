@@ -5,7 +5,6 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-// #include <linux/i2c-dev.h>
 
 extern "C"
 {
@@ -13,7 +12,6 @@ extern "C"
 #include <i2c/smbus.h>
 #include <linux/i2c.h>
 }
-// #include <i2c/smbus.h>
 
 std::mutex i2c_mutex;
 

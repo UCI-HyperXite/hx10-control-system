@@ -5,21 +5,21 @@
 #include <sys/types.h>
 #include <time.h>
 #include <linux/i2c.h>
-#include "include/components.h"
-
+#include "components.hpp"
+#include <future>
+#include <thread>
 
 
 int main() {
 
 	MPU6050 gyro(0x68, false);
-	std::thread gyroThread(readGyro, &gyro);
+	std::future<void> orientation = std::async(std::launch::async, readGyro, &gyro);
 
 	vl6180 pod_height = vl6180_initialise(1);
-	std::thread podHeightThread(readPodHeight, &pod_height);
+	std::future<void> height = std::async(std::launch::async, readPodHeight, &pod_height);
 
-    // Keep main alive
-	gyroThread.join();
-    podHeightThread.join();
+	orientation.wait();
+	height.wait();
 
 	return 0;
 }
