@@ -2,6 +2,7 @@
 #include "Adafruit_ADS1015.h" 
 #include <thread>
 #include <cmath>
+#include <future>
 
 #define ADS_I2C_ADDRESS 0x4B
 
@@ -75,33 +76,52 @@ float getThermistorTemperator(float resistance){
 
 }
 
+float getThermistorTemperatureAsync() {
+    float voltage = readDifferentialVoltage(2, 3);
+    float resistance = getThermistorResistance(voltage);
+    float temperature = getThermistorTemperator(resistance);
+
+    std::cout << "[Async] Voltage: " << voltage << " V\n";
+    std::cout << "[Async] Resistance: " << resistance << " Ω\n";
+
+    return temperature;
+}
+
 int main() {
     ads.setGain(GAIN);
     ads.begin();
 
     while (true) {
-        float voltage = readDifferentialVoltage(2, 3);
-	    std::cout << "Voltage: " << voltage << " V" << std::endl;
+        std::future<float> tempFuture = std::async(std::launch::async, getThermistorTemperatureAsync);
+        
+        // Wait for result and print when ready
+        float temperature = tempFuture.get(); // blocks until result is ready
+        std::cout << "[Main] Temperature: " << temperature << " °C\n";
 
-        float resistance = getThermistorResistance(voltage);
-        std::cout << "Thermistor resistance: " << resistance << " Ω" << std::endl;
-
-        float temperature = getThermistorTemperator(resistance);
-        std::cout << "Temperature: " << temperature << " C" << std::endl;
-
-        //float v0 = readSingleVoltage(0);
-        //float v1 = readSingleVoltage(1);
-        //float v2 = readSingleVoltage(2);
-        //float v3 = readSingleVoltage(3);
-
-        //std::cout << "A0 Voltage: " << v0 << " V" << std::endl;
-        //std::cout << "A1 Voltage: " << v1 << " V" << std::endl;
-        //std::cout << "A2 Voltage: " << v2 << " V" << std::endl;
-        //std::cout << "A3 Voltage: " << v3 << " V" << std::endl;
-	
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000)); 
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     return 0;
 }
+
+
+// int main() {
+//     ads.setGain(GAIN);
+//     ads.begin();
+
+//     while (true) {
+//         float voltage = readDifferentialVoltage(2, 3);
+// 	    std::cout << "Voltage: " << voltage << " V" << std::endl;
+
+//         float resistance = getThermistorResistance(voltage);
+//         std::cout << "Thermistor resistance: " << resistance << " Ω" << std::endl;
+
+//         float temperature = getThermistorTemperator(resistance);
+//         std::cout << "Temperature: " << temperature << " C" << std::endl;
+
+
+//         std::this_thread::sleep_for(std::chrono::milliseconds(1000)); 
+//     }
+
+//     return 0;
+// }
