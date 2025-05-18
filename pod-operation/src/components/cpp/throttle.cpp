@@ -55,3 +55,32 @@ bool MCP4725::setThrottle(int value) {
     return success;
 }
 
+
+int main() {
+    MCP4725 dac(MCP4725_ADDR, I2C_DEVICE);
+
+    // Ramp up from 0 to MAX_VALUE in steps
+    std::cout << "Ramping up DAC output..." << std::endl;
+    for (int value = 0; value <= MCP4725::MAX_VALUE; value += 256) {
+        if (!dac.setThrottle(value)) {
+            std::cerr << "Failed to set DAC value to " << value << std::endl;
+        } else {
+            std::cout << "Set DAC to: " << value << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    }
+
+    // Ramp down
+    std::cout << "Ramping down DAC output..." << std::endl;
+    for (int value = MCP4725::MAX_VALUE; value >= 0; value -= 256) {
+        if (!dac.setThrottle(value)) {
+            std::cerr << "Failed to set DAC value to " << value << std::endl;
+        } else {
+            std::cout << "Set DAC to: " << value << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    }
+
+    return 0;
+}
+
