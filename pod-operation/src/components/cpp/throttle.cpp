@@ -57,30 +57,30 @@ bool MCP4725::setThrottle(int value) {
 
 
 int main() {
-    MCP4725 dac(MCP4725_ADDR, I2C_DEVICE);
+    MCP4725 dac;  // Uses default address 0x60 and default device "/dev/i2c-1"
 
-    // Ramp up from 0 to MAX_VALUE in steps
-    std::cout << "Ramping up DAC output..." << std::endl;
-    for (int value = 0; value <= MCP4725::MAX_VALUE; value += 256) {
+    std::cout << "Testing MCP4725 throttle output...\n";
+
+    // Ramp up
+    for (int value = 0; value <= MCP4725::MAX_VALUE; value += 512) {
         if (!dac.setThrottle(value)) {
-            std::cerr << "Failed to set DAC value to " << value << std::endl;
+            std::cerr << "Error: Failed to set value " << value << "\n";
         } else {
-            std::cout << "Set DAC to: " << value << std::endl;
+            std::cout << "Throttle set to: " << value << "\n";
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
     }
 
     // Ramp down
-    std::cout << "Ramping down DAC output..." << std::endl;
-    for (int value = MCP4725::MAX_VALUE; value >= 0; value -= 256) {
+    for (int value = MCP4725::MAX_VALUE; value >= 0; value -= 512) {
         if (!dac.setThrottle(value)) {
-            std::cerr << "Failed to set DAC value to " << value << std::endl;
+            std::cerr << "Error: Failed to set value " << value << "\n";
         } else {
-            std::cout << "Set DAC to: " << value << std::endl;
+            std::cout << "Throttle set to: " << value << "\n";
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
     }
 
+    std::cout << "DAC test complete.\n";
     return 0;
 }
-
