@@ -1,18 +1,3 @@
-//
-// VL53L0X time of flight range sensor
-// Library to read the distance
-// from the I2C bus
-//
-// by Larry Bank
-//
-// This code is based on Pololu's Arduino library
-// https://github.com/pololu/vl53l0x-arduino
-// (see LICENSE.txt for more info)
-//
-// My version is an attempt to simplify that code and
-// create a generic C library for Linux
-//
-
 #include <unistd.h>
 #include <stdio.h>
 #include <stdint.h>
