@@ -1,26 +1,24 @@
-#include "components/c/brakes.h"
-#include "components/c/lim_current.h"
-#include "components/c/lim_temperature.h"
-#include "components/c/pressure_transducer.h"
-#include "components/c/wheel_encoder.h"
-#include "components/c/yaw.h"
-#include "components/cpp/high_voltage_system.hpp"
-#include "components/cpp/inverter.hpp"
-#include "components/cpp/signal_light.hpp"
+#ifndef COMPONENTS_H
+#define COMPONENTS_H
 
 #include <iostream>
 #include <thread>
 #include <chrono>
 
-#include "gyro.hpp"
 extern "C" {
-    #include "ina219.h"
     #include "pod_height.h"
 }
+#include "components/cpp/gyro.hpp"
+#include "components/cpp/current_sensor.hpp"
+#include "components/cpp/pressure_transducer.cc" //look to delete at the end
 
 
 void readGyro(MPU6050* gyro);
 
 void readPodHeight(vl6180* pod_height);
 
-void readPneumaticPressure(ina219* pressure_transducer);
+void readPneumaticPressure(PressureTransducer* pressure_transducer);
+
+void readCoolantPressure(PressureTransducer* pressure_transducer);
+
+#endif

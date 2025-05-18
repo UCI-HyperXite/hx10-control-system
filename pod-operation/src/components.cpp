@@ -2,14 +2,8 @@
 #include <thread>
 #include <chrono>
 #include <future>
-// #include "../include/components.hpp"
 
-#include "gyro.hpp"
-extern "C" {
-    #include "ina219.h"
-    #include "pod_height.h"
-}
-#include "pressure_transducer.cpp" //look to delete at the end
+#include "../include/components/components.hpp"
 
 void readGyro(MPU6050* gyro)
 {
@@ -34,16 +28,18 @@ void readPodHeight(vl6180* pod_height) {
     }
 }
 
-void readPneumaticPressure(ina219* pressure_transducer){
-    float previous_pressure1, previous_pressure2, previous_pressure3 = 0;
+void readPneumaticPressure(PressureTransducer* pressure_transducer){
     while (true) {
-        float pressure = pressure_transducer.read_pressure();
-
-        if (abs(pressure) < abs((previous_pressure1 + previous_pressure2 + previous_pressure3)/3)){
-            std::cout << "Upstream Pressure [psi]: " << upstream_pressure_PSI << "\n" << std::endl;
-        }
-        previous_pressure1 = previous_pressure2;
-        previous_pressure2 = previous_pressure3;
-        previous_pressure3 = pressure;
+        float pressure = pressure_transducer->read_pressure_pneumatics();
+        std::cout << "Pneumatic Pressure [psi]: " << pressure << "\n" << std::endl;
+        usleep(100000);
     } 
+}
+
+void readCoolantPressure(PressureTransducer* pressure_transducer){
+    while (true) {
+        float pressure = pressure_transducer->read_pressure_coolant();
+        std::cout << "Coolant Pressure [psi]: " << pressure << "\n" << std::endl;
+        usleep(100000);
+    }
 }
