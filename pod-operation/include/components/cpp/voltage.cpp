@@ -4,10 +4,10 @@
 #include <cmath>
 #include <future>
 
-#define ADS_I2C_ADDRESS 0x4B
+// #define ADS_I2C_ADDRESS 0x4B
 
 // Create an instance of the ADS1115
-Adafruit_ADS1115 ads(ADS_I2C_ADDRESS); // Default I2C address
+// Adafruit_ADS1115 ads(ADS_I2C_ADDRESS); // Default I2C address
 
 // Gain settings (change depending on your expected voltage range)
 adsGain_t GAIN = GAIN_TWOTHIRDS; // ±6.144V
@@ -29,7 +29,7 @@ float rawToVoltage(int16_t raw, adsGain_t gain) {
 }
 
 // Reads differential voltage between channels 0 and 1 or 2 and 3
-float readDifferentialVoltage(uint8_t ainp, uint8_t ainm) {
+float readDifferentialVoltage(Adafruit_ADS1115& ads, uint8_t ainp, uint8_t ainm) {
     int16_t raw;
 
     if (ainp == 0 && ainm == 1) {
@@ -47,7 +47,7 @@ float readDifferentialVoltage(uint8_t ainp, uint8_t ainm) {
 }
 
 // Reads single ended voltage 
-float readSingleVoltage(uint8_t channel){
+float readSingleVoltage(Adafruit_ADS1115& ads, uint8_t channel){
     if (channel < 0 || channel > 3){
 	std::cerr << "Invalid channel. Must be 0-3." << std::endl;
     }
@@ -82,8 +82,7 @@ void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
     ads->begin();
 
     while (true) {
-        int16_t raw = ads->readADC_Differential_2_3();
-        float voltage = rawToVoltage(raw, GAIN);
+        float voltage = readDifferentialVoltage(*ads, 2, 3);
         float resistance = getThermistorResistance(voltage);
         float temperature = getThermistorTemperator(resistance);
 

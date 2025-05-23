@@ -30,8 +30,17 @@ int main() {
 	PressureTransducer right_coolant_manifold(0.1f, 3.2f, 0x45, Reference::right_Manifold());
 	std::future<void> pressure_right_coolant = std::async(std::launch::async, readCoolantPressure, &right_coolant_manifold);
 
-	Adafruit_ADS1115 ads(0x4B);
-	std::future<void> ads_temp = std::async(std::launch::async, readADS1015ThermistorLoop, &ads);
+	Adafruit_ADS1115 ads1(0x48);
+	std::future<void> adsFut1 = std::async(std::launch::async, readADS1015ThermistorLoop, &ads1);
+
+	Adafruit_ADS1115 ads2(0x49);
+	std::future<void> adsFut2 = std::async(std::launch::async, readADS1015ThermistorLoop, &ads2);
+
+	Adafruit_ADS1115 ads3(0x4A);
+	std::future<void> adsFut3 = std::async(std::launch::async, readADS1015ThermistorLoop, &ads3);
+
+	Adafruit_ADS1115 ads4(0x4B);
+	std::future<void> adsFut4 = std::async(std::launch::async, readADS1015ThermistorLoop, &ads4);
 
 	orientation.wait();
 	height.wait();
