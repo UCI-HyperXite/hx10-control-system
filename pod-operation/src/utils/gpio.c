@@ -3,6 +3,7 @@
 #include <cassert>
 // #include <wiringPi.h>
 // #include "pod-operation/include/utils/gpio.h"
+#include "../include/utils/gpio.h"
 
 void initailizeGPIOs(void){
     wiringPiSetup();

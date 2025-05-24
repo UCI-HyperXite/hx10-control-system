@@ -1,17 +1,5 @@
 // Include the header file for this class
-#include "gyro.hpp"
-#include <iostream>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-
-extern "C"
-{
-#include <linux/i2c-dev.h>
-#include <i2c/smbus.h>
-#include <linux/i2c.h>
-}
+#include "../../include/components/cpp/gyro.hpp"
 
 std::mutex i2c_mutex;
 

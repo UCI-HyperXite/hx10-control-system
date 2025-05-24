@@ -1,6 +1,15 @@
 #ifndef _TOFLIB_H_
 #define _TOFLIB_H_
 
+#include <unistd.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/i2c-dev.h>
+
 //
 // Read the model and revision of the
 // tof sensor

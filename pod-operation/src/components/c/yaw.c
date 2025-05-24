@@ -1,11 +1,4 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
+#include "../../include/components/c/yaw.h"
 
 static int file_i2c = 0;
 static unsigned char stop_variable;

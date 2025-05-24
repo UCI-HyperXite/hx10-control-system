@@ -1,13 +1,4 @@
-#include "pod_height.h"
-#include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdio.h>
-
-
+#include "../../include/components/c/pod_height.h"
 
 int read_byte(vl6180 handle, int reg){
     char data_write[2];

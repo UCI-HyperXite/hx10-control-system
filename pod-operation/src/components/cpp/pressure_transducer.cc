@@ -1,6 +1,6 @@
 #include <iostream>
 #include <unistd.h> // for usleep
-#include "current_sensor.hpp"
+#include "../../include/components/cpp/current_sensor.hpp"
 
 // This struct helps convert current (mA) to pressure (PSI)
 struct Reference

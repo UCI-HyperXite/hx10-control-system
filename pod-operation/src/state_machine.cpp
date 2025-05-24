@@ -1,4 +1,4 @@
-#include "../include/state_machine.hpp"
+#include "include/state_machine.hpp"
 
 StateMachine::StateMachine() : currentState(PodState::INIT) {
     // stubbed functions w/ target states

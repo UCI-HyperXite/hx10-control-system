@@ -1,11 +1,4 @@
-#include "current_sensor.hpp"
-
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
-#include <bitset>
-#include <math.h>
+#include "../../include/components/cpp/current_sensor.hpp"
 
 INA219::INA219(float shunt_resistance, float max_expected_amps)
 {

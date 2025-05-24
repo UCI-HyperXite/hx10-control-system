@@ -1,5 +1,4 @@
-#include "brakes.h"
-#include "../../utils/gpio.h"
+#include "../../include/components/c/brakes.h"
 
 struct Brakes brake;
 

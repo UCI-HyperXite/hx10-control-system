@@ -1,23 +1,3 @@
-/**************************************************************************/
-/*!
-    @file     Adafruit_ADS1015.cpp
-    @author   K.Townsend (Adafruit Industries)
-    @license  BSD (see license.txt)
-
-    Driver for the ADS1015/ADS1115 ADC
-
-    This is a library for the Adafruit MPL115A2 breakout
-    ----> https://www.adafruit.com/products/???
-
-    Adafruit invests time and resources providing this open source code,
-    please support Adafruit and open-source hardware by purchasing
-    products from Adafruit!
-
-    @section  HISTORY
-
-    v1.0 - First release
-*/
-/**************************************************************************/
 //#if ARDUINO >= 100
 // #include "Arduino.h"
 //#else
@@ -28,7 +8,7 @@
 #include <unistd.h>
 #include <wiringPiI2C.h>
 
-#include "../c/Adafruit_ADS1015.h"
+#include "../../include/components/c/Adafruit_ADS1015.h"
 
 /**************************************************************************/
 /*!

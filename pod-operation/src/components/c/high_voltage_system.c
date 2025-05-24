@@ -1,5 +1,4 @@
-#include "high_voltage_system.h"
-#include "../../utils/gpio.h"
+#include "../../include/components/c/high_voltage_system.h"
 
 struct HighVoltageSystem highVoltageSystem;
 

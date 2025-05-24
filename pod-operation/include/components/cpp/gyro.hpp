@@ -2,6 +2,19 @@
 #ifndef GYRO_HPP
 #define GYRO_HPP
 
+#include <iostream>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+
+extern "C"
+{
+#include <linux/i2c-dev.h>
+#include <i2c/smbus.h>
+#include <linux/i2c.h>
+}
+
 #define GYRO_RANGE 0 // Select which gyroscope range to use (see the table below) - Default is 0
 //	Gyroscope Range
 //	0	+/- 250 degrees/second

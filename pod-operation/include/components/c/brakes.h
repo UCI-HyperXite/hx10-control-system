@@ -1,6 +1,8 @@
 #ifndef BRAKES_H
 #define BRAKES_H
 
+#include "../../utils/gpio.h"
+
 struct Brakes {
     int pin;
 };

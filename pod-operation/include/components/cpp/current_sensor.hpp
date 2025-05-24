@@ -1,6 +1,13 @@
  #ifndef _LIB_INA219_PI
  #define _LIB_INA219_PI
  
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/i2c-dev.h>
+#include <bitset>
+#include <math.h>
+
  #define RANGE_16V 0 // Range 0-16 volts
  #define RANGE_32V 1 // Range 0-32 volts
  

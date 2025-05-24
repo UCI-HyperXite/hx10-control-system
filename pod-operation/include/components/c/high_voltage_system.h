@@ -1,6 +1,8 @@
 #ifndef HIGHVOLTAGESYSTEM_H
 #define HIGHVOLTAGESYSTEM_H
 
+#include "../../utils/gpio.h"
+
 struct HighVoltageSystem {
     int pin;
 };

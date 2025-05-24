@@ -5,10 +5,10 @@
 #include <sys/types.h>
 #include <time.h>
 #include <linux/i2c.h>
-#include "include/components.hpp"
 #include <future>
 #include <thread>
 
+#include "include/components.hpp"
 
 int main() {
 
@@ -48,6 +48,10 @@ int main() {
 	pressure_upstream.wait();
 	pressure_left_coolant.wait();
 	pressure_right_coolant.wait();
+	adsFut1.wait();
+	adsFut2.wait();
+	adsFut3.wait();
+	adsFut4.wait();
 
 	return 0;
 }

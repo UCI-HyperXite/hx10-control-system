@@ -3,7 +3,7 @@
 #include <chrono>
 #include <future>
 
-#include "../include/components/components.hpp"
+#include "include/components.hpp"
 
 void readGyro(MPU6050* gyro)
 {
@@ -41,5 +41,23 @@ void readCoolantPressure(PressureTransducer* pressure_transducer){
         float pressure = pressure_transducer->read_pressure_coolant();
         std::cout << "Coolant Pressure [psi]: " << pressure << "\n" << std::endl;
         usleep(100000);
+    }
+}
+
+// ads function for threading call
+void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
+    ads->setGain(GAIN);
+    ads->begin();
+
+    while (true) {
+        float voltage = readDifferentialVoltage(*ads, 2, 3);
+        float resistance = getThermistorResistance(voltage);
+        float temperature = getThermistorTemperator(resistance);
+
+        std::cout << "[ADS1015] Voltage: " << voltage << " V, "
+                  << "Resistance: " << resistance << " Ω, "
+                  << "Temperature: " << temperature << " °C\n";
+
+        std::this_thread::sleep_for(std::chrono::seconds(1)); 
     }
 }
