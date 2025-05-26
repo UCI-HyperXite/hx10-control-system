@@ -41,4 +41,5 @@ target_link_libraries(pod_operation
     pthread
     m
     wiringPi
+    i2c
 )
