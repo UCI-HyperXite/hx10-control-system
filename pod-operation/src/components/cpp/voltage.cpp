@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../../include/components/c/Adafruit_ADS1015.h" 
+#include "../../../include/components/c/Adafruit_ADS1015.h" 
 #include <thread>
 #include <cmath>
 #include <future>

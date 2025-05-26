@@ -1,5 +1,5 @@
 // Include the header file for this class
-#include "../../include/components/cpp/gyro.hpp"
+#include "../../../include/components/cpp/gyro.hpp"
 
 std::mutex i2c_mutex;
 

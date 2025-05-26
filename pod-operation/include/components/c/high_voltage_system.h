@@ -1,15 +1,16 @@
 #ifndef HIGHVOLTAGESYSTEM_H
 #define HIGHVOLTAGESYSTEM_H
 
+#include <wiringPi.h>
 #include "../../utils/gpio.h"
 
 struct HighVoltageSystem {
     int pin;
 };
 
-void initializeHighVoltageSystem(int pin);
-void engageContactors(int pin);
-void disengageContactors(int pin);
+void initializeHighVoltageSystem();
+void engageContactors();
+void disengageContactors();
 
 
 #endif

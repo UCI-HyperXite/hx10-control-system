@@ -1,4 +1,4 @@
-#include "../../include/components/cpp/seven_segment_display.hpp"
+#include "../../../include/components/cpp/seven_segment_display.hpp"
 
 /*!
 	@brief Constructor for class HT16K33plus_Model1

@@ -1,17 +1,15 @@
-#include "../../include/components/c/high_voltage_system.h"
+#include "../../../include/components/c/high_voltage_system.h"
 
 struct HighVoltageSystem highVoltageSystem;
 
-void initializeHighVoltageSystem(int pin){
-    highVoltageSystem.pin = pin;
-    highVoltageSystem->pin = GPIOPins->CONTACTOR_RELAY;
-    pinMode(pin, OUTPUT);
+void initializeHighVoltageSystem(){
+    highVoltageSystem.pin = CONTACTOR_RELAY;
 }
 
-void engageContactors(int pin){
-    digitalWrite(pin, HIGH);
+void engageContactors(){
+    setHigh(highVoltageSystem.pin);
 }
 
-void disengageContactors(int pin){
-    digitalWrite(pin, LOW);
+void disengageContactors(){
+    setLow(highVoltageSystem.pin);
 }

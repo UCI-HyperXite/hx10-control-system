@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <wiringPiI2C.h>
 
-#include "../../include/components/c/Adafruit_ADS1015.h"
+#include "../../../include/components/c/Adafruit_ADS1015.h"
 
 /**************************************************************************/
 /*!

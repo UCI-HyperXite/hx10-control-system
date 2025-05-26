@@ -1,16 +1,15 @@
-#include "../../include/components/c/brakes.h"
+#include "../../../include/components/c/brakes.h"
 
 struct Brakes brake;
 
-void initializeBrakes(int pin){
-    brake->pin = GPIOPins->PNEUMATICS_RELAY;
-    pinMode(pin, OUTPUT);
+void initializeBrakes(){
+    brake.pin = PNEUMATICS_RELAY;
 }
 
-void engage(int pin){
-    pinMode(pin, LOW);
+void engageBrakes(){
+    setHigh(brake.pin);
 }
 
-void disengage(int pin){
-    pinMode(pin, HIGH);
+void disengageBrakes(){
+    setLow(brake.pin);
 }

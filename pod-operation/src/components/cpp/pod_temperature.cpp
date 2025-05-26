@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../../include/components/c/Adafruit_ADS1015.h" // This will use ADS1115 by default
+#include "../../../include/components/c/Adafruit_ADS1015.h" // This will use ADS1115 by default
 #include <thread>
 #define ADS_I2C_ADDRESS 0x4B
 

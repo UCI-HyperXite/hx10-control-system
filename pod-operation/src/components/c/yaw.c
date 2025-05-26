@@ -1,4 +1,4 @@
-#include "../../include/components/c/yaw.h"
+#include "../../../include/components/c/yaw.h"
 
 static int file_i2c = 0;
 static unsigned char stop_variable;
@@ -865,7 +865,3 @@ int tofGetModel(int *model, int *revision)
   return 1;
 
 } /* tofGetModel() */
-<<<<<<< HEAD
-
-=======
->>>>>>> fsm
