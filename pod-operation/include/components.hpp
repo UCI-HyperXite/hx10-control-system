@@ -6,12 +6,13 @@
 #include <chrono>
 
 extern "C" {
-    #include "pod_height.h"
+    #include "components/c/pod_height.h"
     #include "components/c/Adafruit_ADS1015.h"
 }
 #include "components/cpp/gyro.hpp"
 #include "components/cpp/current_sensor.hpp"
-#include "components/cpp/pressure_transducer.cc" //look to delete at the end
+#include "../src/components/cpp/pressure_transducer.cc"
+#include "../src/components/cpp/voltage.cpp"
 
 void readGyro(MPU6050* gyro);
 

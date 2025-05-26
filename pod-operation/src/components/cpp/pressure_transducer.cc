@@ -16,8 +16,8 @@ struct Reference
 
     static Reference upstream() { return Reference(0.0f, 5000.0f, 4.0f, 20.0f); }
     static Reference downstream() { return Reference(0.0f, 300.0f, 4.0f, 20.0f); }
+    static Reference left_Manifold() { return Reference(0.0f, 3.5f, 4.0f, 20.0f); }
     static Reference right_Manifold() { return Reference(0.0f, 3.5f, 4.0f, 20.0f); }
-    static Reference leftt_Manifold() { return Reference(0.0f, 3.5f, 4.0f, 20.0f); }
 };
 
 // This class ties together INA219 + Reference

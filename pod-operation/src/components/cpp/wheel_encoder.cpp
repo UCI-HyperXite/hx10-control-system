@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <wiringPi.h>
 #include <unistd.h> 
+#include <atomic>
 
 constexpr float WHEEL_DIAMETER = 0.0762f;
 constexpr float ENCODER_RESOLUTION = 16.0f;

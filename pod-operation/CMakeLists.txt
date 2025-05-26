@@ -24,7 +24,6 @@ set(pod_operation_sources
     src/components/cpp/inverter.cpp
     src/components/cpp/pod_temperature.cpp
     src/components/cpp/pressure_transducer.cc
-    
     src/components/cpp/signal_light.cpp
     src/components/cpp/voltage.cpp
     src/components/cpp/wheel_encoder.cpp
@@ -41,4 +40,5 @@ target_link_libraries(pod_operation
     pod_c
     pthread
     m
+    wiringPi
 )

@@ -1,4 +1,4 @@
-#include "include/state_machine.hpp"
+#include "../include/state_machine.hpp"
 
 StateMachine::StateMachine() : currentState(PodState::INIT) {
     // stubbed functions w/ target states
@@ -53,11 +53,11 @@ void StateMachine::registerEventAction(PodState state, std::function<bool()> eve
 }
 
 void StateMachine::controlLED() {
-    if (currentState == PodState::START) {
-        gpio_set_led_color("green");
-    } else if (currentState == PodState::STOP || currentState == PodState::INIT) {
-        gpio_set_led_color("off");
-    } else if (currentState == PodState::HALT) {
-        gpio_blink_led("red");
-    }
+    // if (currentState == PodState::START) {
+    //     gpio_set_led_color("green");
+    // } else if (currentState == PodState::STOP || currentState == PodState::INIT) {
+    //     gpio_set_led_color("off");
+    // } else if (currentState == PodState::HALT) {
+    //     gpio_blink_led("red");
+    // }
 }

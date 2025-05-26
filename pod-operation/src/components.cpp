@@ -3,7 +3,7 @@
 #include <chrono>
 #include <future>
 
-#include "include/components.hpp"
+#include "../include/components.hpp"
 
 void readGyro(MPU6050* gyro)
 {
@@ -46,7 +46,7 @@ void readCoolantPressure(PressureTransducer* pressure_transducer){
 
 // ads function for threading call
 void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
-    ads->setGain(GAIN);
+    ads->setGain(GAIN_TWOTHIRDS);
     ads->begin();
 
     while (true) {

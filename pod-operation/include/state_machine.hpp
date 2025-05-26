@@ -7,7 +7,6 @@
 #include <map>
 #include <functional>
 #include "components/c/brakes.h"
-#include "components/c/wheel_encoder.h"
 #include "components/cpp/inverter.hpp"
 #include "components/cpp/gyro.hpp"
 #include "utils/gpio.h"

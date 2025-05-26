@@ -8,7 +8,7 @@
 #include <future>
 #include <thread>
 
-#include "include/components.hpp"
+#include "../include/components.hpp"
 
 int main() {
 
@@ -30,8 +30,8 @@ int main() {
 	PressureTransducer right_coolant_manifold(0.1f, 3.2f, 0x45, Reference::right_Manifold());
 	std::future<void> pressure_right_coolant = std::async(std::launch::async, readCoolantPressure, &right_coolant_manifold);
 
-	Adafruit_ADS1115 ads1(0x48);
-	std::future<void> adsFut1 = std::async(std::launch::async, readADS1015ThermistorLoop, &ads1);
+	// Adafruit_ADS1115 ads1(0x48);
+	// std::future<void> adsFut1 = std::async(std::launch::async, readADS1015ThermistorLoop, &ads1);
 
 	Adafruit_ADS1115 ads2(0x49);
 	std::future<void> adsFut2 = std::async(std::launch::async, readADS1015ThermistorLoop, &ads2);
@@ -48,7 +48,7 @@ int main() {
 	pressure_upstream.wait();
 	pressure_left_coolant.wait();
 	pressure_right_coolant.wait();
-	adsFut1.wait();
+	// adsFut1.wait();
 	adsFut2.wait();
 	adsFut3.wait();
 	adsFut4.wait();

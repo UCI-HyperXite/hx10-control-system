@@ -75,3 +75,21 @@ float getThermistorTemperator(float resistance){
     return temp_celsius;
 
 }
+
+// ads function for threading call
+// void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
+//     ads->setGain(GAIN);
+//     ads->begin();
+
+//     while (true) {
+//         float voltage = readDifferentialVoltage(*ads, 2, 3);
+//         float resistance = getThermistorResistance(voltage);
+//         float temperature = getThermistorTemperator(resistance);
+
+//         std::cout << "[ADS1015] Voltage: " << voltage << " V, "
+//                   << "Resistance: " << resistance << " Ω, "
+//                   << "Temperature: " << temperature << " °C\n";
+
+//         std::this_thread::sleep_for(std::chrono::seconds(1)); 
+//     }
+// }
