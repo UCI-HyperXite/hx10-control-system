@@ -1,9 +1,12 @@
 #include "MCP4725.h"
+#include <iostream>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
 #include <cstdio>
+#include <thread>
+#include <chrono>
 
 MCP4725::MCP4725(int address, const char* i2cDevice)
     : i2c_fd(-1), i2c_addr(address), i2c_path(i2cDevice) {}
@@ -62,23 +65,23 @@ int main() {
     std::cout << "Testing MCP4725 throttle output...\n";
 
     // Ramp up
-    for (int value = 0; value <= MCP4725::MAX_VALUE; value += 512) {
+    for (int value = 0; value <= (MCP4725::MAX_VALUE*0.4); value += 512) {
         if (!dac.setThrottle(value)) {
             std::cerr << "Error: Failed to set value " << value << "\n";
         } else {
             std::cout << "Throttle set to: " << value << "\n";
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
     // Ramp down
-    for (int value = MCP4725::MAX_VALUE; value >= 0; value -= 512) {
+    for (int value = MCP4725::MAX_VALUE*0.4; value >= 0; value -= 512) {
         if (!dac.setThrottle(value)) {
-            std::cerr << "Error: Failed to set value " << value << "\n";
+            std::cerr << "Error: Failed to set value :" << value << "\n";
         } else {
             std::cout << "Throttle set to: " << value << "\n";
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
     std::cout << "DAC test complete.\n";

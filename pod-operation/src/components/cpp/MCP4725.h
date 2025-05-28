@@ -8,7 +8,7 @@ class MCP4725
 public:
     static const int MAX_VALUE = 4095;
 
-    MCP4725(int address = 0x60, const char *i2cDevice = "/dev/i2c-1");
+    MCP4725(int address = 0x62, const char *i2cDevice = "/dev/i2c-1");
     ~MCP4725();
 
     bool setThrottle(int value); // Value: 0–4095 = 0–5V
