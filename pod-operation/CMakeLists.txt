@@ -22,7 +22,6 @@ set(pod_operation_sources
     src/components/cpp/current_sensor.cpp
     src/components/cpp/gyro.cpp
     src/components/cpp/inverter.cpp
-    src/components/cpp/pod_temperature.cpp
     src/components/cpp/pressure_transducer.cc
     src/components/cpp/signal_light.cpp
     src/components/cpp/voltage.cpp

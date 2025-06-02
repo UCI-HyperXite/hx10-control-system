@@ -7,13 +7,14 @@
 #include <wiringPi.h>
 #include <unistd.h> 
 #include <atomic>
+#include "../../../include/utils/gpio.h"
 
 constexpr float WHEEL_DIAMETER = 0.0762f;
 constexpr float ENCODER_RESOLUTION = 16.0f;
 constexpr float DISTANCE_PER_COUNT = WHEEL_DIAMETER * static_cast<float>(M_PI) / ENCODER_RESOLUTION;
 
-constexpr int WHEEL_ENCODER_A_PIN = 0;
-constexpr int WHEEL_ENCODER_B_PIN = 1;
+GPIOPins WHEEL_ENCODER_A_PIN = WHEEL_ENCODER_A;
+GPIOPins WHEEL_ENCODER_B_PIN = WHEEL_ENCODER_B;
 
 enum class Level : int8_t {
     Low = 0,
@@ -146,15 +147,3 @@ private:
 };
 
 WheelEncoder* WheelEncoder::instance = nullptr;
-
-int main() {
-    WheelEncoder encoder(WHEEL_ENCODER_A_PIN, WHEEL_ENCODER_B_PIN);
-
-    while (true) {
-        std::cout << "Distance: " << encoder.get_distance() << " m, ";
-        usleep(100000); 
-        delay(100); 
-    }
-
-    return 0;
-}

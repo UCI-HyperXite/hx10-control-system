@@ -10,7 +10,13 @@
 // Adafruit_ADS1115 ads(ADS_I2C_ADDRESS); // Default I2C address
 
 // Gain settings (change depending on your expected voltage range)
-adsGain_t GAIN = GAIN_TWOTHIRDS; // ±6.144V
+// adsGain_t GAIN = GAIN_TWOTHIRDS; // ±6.144V
+
+float rawToVoltage(int16_t raw, adsGain_t gain);
+float readDifferentialVoltage(Adafruit_ADS1115& ads, uint8_t ainp, uint8_t ainm);
+float readSingleVoltage(Adafruit_ADS1115& ads, uint8_t channel);
+float getThermistorResistance(float v_out, float v_in);
+float getThermistorTemperator(float resistance);
 
 // Function to convert raw ADC to voltage based on the gain setting
 float rawToVoltage(int16_t raw, adsGain_t gain) {
@@ -75,21 +81,3 @@ float getThermistorTemperator(float resistance){
     return temp_celsius;
 
 }
-
-// ads function for threading call
-// void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
-//     ads->setGain(GAIN);
-//     ads->begin();
-
-//     while (true) {
-//         float voltage = readDifferentialVoltage(*ads, 2, 3);
-//         float resistance = getThermistorResistance(voltage);
-//         float temperature = getThermistorTemperator(resistance);
-
-//         std::cout << "[ADS1015] Voltage: " << voltage << " V, "
-//                   << "Resistance: " << resistance << " Ω, "
-//                   << "Temperature: " << temperature << " °C\n";
-
-//         std::this_thread::sleep_for(std::chrono::seconds(1)); 
-//     }
-// }

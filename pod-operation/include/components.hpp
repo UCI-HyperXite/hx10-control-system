@@ -13,6 +13,7 @@ extern "C" {
 #include "components/cpp/current_sensor.hpp"
 #include "../src/components/cpp/pressure_transducer.cc"
 #include "../src/components/cpp/voltage.cpp"
+#include "../src/components/cpp/wheel_encoder.cpp"
 
 void readGyro(MPU6050* gyro);
 
@@ -23,5 +24,7 @@ void readPneumaticPressure(PressureTransducer* pressure_transducer);
 void readCoolantPressure(PressureTransducer* pressure_transducer);
 
 void readADS1015ThermistorLoop(Adafruit_ADS1115* ads);
+
+void readEncoder(WheelEncoder* encoder);
 
 #endif

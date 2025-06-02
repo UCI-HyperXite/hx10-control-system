@@ -46,7 +46,7 @@ void readCoolantPressure(PressureTransducer* pressure_transducer){
 
 // ads function for threading call
 void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
-    ads->setGain(GAIN_TWOTHIRDS);
+    ads->setGain(GAIN);
     ads->begin();
 
     while (true) {
@@ -61,3 +61,16 @@ void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
         std::this_thread::sleep_for(std::chrono::seconds(1)); 
     }
 }
+
+void readEncoder(WheelEncoder* encoder){
+    while (true) {
+        float distance = encoder->get_distance();
+        float velocity = encoder->get_velocity();
+
+        std::cout << "Distance: " << distance << " m, "
+                  << "Velocity: " << velocity << " m/s\n";
+
+        usleep(100000);
+    }
+}
+
