@@ -50,13 +50,29 @@ void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
     ads->begin();
 
     while (true) {
-        float voltage = readDifferentialVoltage(*ads, 2, 3);
-        float resistance = getThermistorResistance(voltage);
-        float temperature = getThermistorTemperator(resistance);
+        // float voltage = readDifferentialVoltage(*ads, 2, 3);
 
-        std::cout << "[ADS1015] Voltage: " << voltage << " V, "
-                  << "Resistance: " << resistance << " Ω, "
-                  << "Temperature: " << temperature << " °C\n";
+        // int16_t raw = ads->readADC_SingleEnded(0);  
+        // float voltage = raw * 0.1875F / 1000.0f;
+        // float resistance = getThermistorResistance(voltage);
+        // float temperature = getThermistorTemperator(resistance);
+
+        // std::cout << "[ADS1015] Voltage: " << voltage << " V, "
+        //           << "Resistance: " << resistance << " Ω, "
+        //           << "Temperature: " << temperature << " °C\n";
+
+        for (int channel = 0; channel < 4; ++channel) {
+            int16_t raw = ads->readADC_SingleEnded(channel);
+            float voltage = raw * 0.1875F / 1000.0f;
+            float resistance = getThermistorResistance(voltage);
+            float temperature = getThermistorTemperator(resistance);
+
+            std::cout << "[ADS1015] Channel: " << channel << ", "
+                      << " Voltage: " << voltage << " V, " 
+                      << "Resistance: " << resistance << " Ω, "
+                      << "Temperature: " << temperature << " °C\n"
+                      << std::endl;
+        }
 
         std::this_thread::sleep_for(std::chrono::seconds(1)); 
     }
