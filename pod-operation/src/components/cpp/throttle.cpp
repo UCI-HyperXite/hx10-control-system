@@ -1,12 +1,19 @@
-#include "MCP4725.h"
+
 #include <iostream>
+#include <cstdio>
+#include <thread>
+#include <chrono>
+#include <lgpio.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
-#include <cstdio>
-#include <thread>
-#include <chrono>
+#include "MCP4725.h"
+#include <wiringPi.h>
+extern "C" {
+    #include "gpio.h"    
+}
+
 
 MCP4725::MCP4725(int address, const char* i2cDevice)
     : i2c_fd(-1), i2c_addr(address), i2c_path(i2cDevice) {}
@@ -60,12 +67,22 @@ bool MCP4725::setThrottle(int value) {
 
 
 int main() {
+    wiringPiSetupGpio();         
+    pinMode(17, OUTPUT);      
     MCP4725 dac;  // Uses default address 0x60 and default device "/dev/i2c-1"
 
     std::cout << "Testing MCP4725 throttle output...\n";
-
+    
     // Ramp up
-    for (int value = 0; value <= (MCP4725::MAX_VALUE*0.4); value += 512) {
+    if (!dac.setThrottle(0)) {
+        std::cerr << "Error: Failed to set value " << 0 << "\n";
+    } else {
+        std::cout << "Throttle set to: " << 0 << "\n";
+    }
+    digitalWrite(17, 0);
+    std::cout << "Pin 17 written to 1";
+    std::this_thread::sleep_for(std::chrono::seconds(30));
+    for (int value = 0; value <= (MCP4725::MAX_VALUE*0.5); value += 50) {
         if (!dac.setThrottle(value)) {
             std::cerr << "Error: Failed to set value " << value << "\n";
         } else {
@@ -75,7 +92,7 @@ int main() {
     }
 
     // Ramp down
-    for (int value = MCP4725::MAX_VALUE*0.4; value >= 0; value -= 512) {
+    for (int value = MCP4725::MAX_VALUE*0.5; value >= 0; value -= 100) {
         if (!dac.setThrottle(value)) {
             std::cerr << "Error: Failed to set value :" << value << "\n";
         } else {
@@ -83,7 +100,7 @@ int main() {
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
-
+    digitalWrite(17, 0);
     std::cout << "DAC test complete.\n";
     return 0;
 }

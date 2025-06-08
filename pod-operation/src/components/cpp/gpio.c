@@ -1,9 +1,9 @@
 #include <iostream>
 #include <cassert>
-// #include <wiringPi.h>
-// #include "pod-operation/include/utils/gpio.h"
+#include <wiringPi.h>
+#include "gpio.h"
 
-void initailizeGPIOs(void){
+void initailizeGPIOs(){
     wiringPiSetup();
 
     // pinMode(I2C_SDA, );
@@ -17,12 +17,13 @@ void initailizeGPIOs(void){
     pinMode(CONTACTOR_RELAY, INPUT);
     pinMode(SIGNAL_LIGHT_RELAY, INPUT);
     pinMode(PNEUMATICS_RELAY, INPUT);
+    pinMode(THROTTLE_RELAY, INPUT);
 }
 
 void setHigh(int pin){
-    digitalWrite(pin, HIGH);
+    digitalWrite(pin, 1);
 }
 
 void setLow(int pin){
-    digitalWrite(pin, LOW);
+    digitalWrite(pin, 0);
 }

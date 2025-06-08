@@ -12,8 +12,11 @@ enum GPIOPins{
     CONTACTOR_RELAY = 20,
 	SIGNAL_LIGHT_RELAY = 21,
 	PNEUMATICS_RELAY = 26,
+    THROTTLE_RELAY = 17,
 };
 
-void initailizeGPIOs(void);
+void initailizeGPIOs();
+void setHigh(int pin);
+void setLow(int pin);
 
 #endif
