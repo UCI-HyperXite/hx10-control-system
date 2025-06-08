@@ -79,9 +79,20 @@ int main() {
     } else {
         std::cout << "Throttle set to: " << 0 << "\n";
     }
-    digitalWrite(17, 0);
+    // while (true){
+    //     digitalWrite(17, HIGH);
+    //     std::cout << "1" << "\n";
+    //     //std::this_thread::sleep_for(std::chrono::seconds(1));
+    //     sleep(1);
+    //     digitalWrite(17, LOW);
+    //     std::cout << "0" << "\n";
+    //     sleep(1);
+    // }
+    digitalWrite(17, HIGH);
     std::cout << "Pin 17 written to 1";
-    std::this_thread::sleep_for(std::chrono::seconds(30));
+    // std::this_thread::sleep_for(std::chrono::seconds(10));
+    sleep(30);
+    
     for (int value = 0; value <= (MCP4725::MAX_VALUE*0.5); value += 50) {
         if (!dac.setThrottle(value)) {
             std::cerr << "Error: Failed to set value " << value << "\n";
@@ -100,7 +111,7 @@ int main() {
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
-    digitalWrite(17, 0);
+    digitalWrite(17, LOW);
     std::cout << "DAC test complete.\n";
     return 0;
 }
