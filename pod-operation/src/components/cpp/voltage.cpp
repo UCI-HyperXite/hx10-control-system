@@ -3,6 +3,8 @@
 #include <thread>
 #include <cmath>
 #include <future>
+#include "../../../include/components/cpp/voltage.hpp"  
+
 
 // #define ADS_I2C_ADDRESS 0x4B
 
@@ -15,8 +17,8 @@
 // float rawToVoltage(int16_t raw, adsGain_t gain);
 // float readDifferentialVoltage(Adafruit_ADS1115& ads, uint8_t ainp, uint8_t ainm);
 // float readSingleVoltage(Adafruit_ADS1115& ads, uint8_t channel);
-float getThermistorResistance(float v_out, float v_in);
-float getThermistorTemperator(float resistance);
+// float getThermistorResistance(float v_out, float v_in);
+// float getThermistorTemperator(float resistance);
 
 // // Function to convert raw ADC to voltage based on the gain setting
 // float rawToVoltage(int16_t raw, adsGain_t gain) {
