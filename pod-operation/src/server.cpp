@@ -1,4 +1,5 @@
 #include "../include/server.hpp"
+#include <boost/json.hpp>
 #include <iostream>
 
 using boost::asio::ip::tcp;
@@ -25,13 +26,14 @@ void Server::initialize()
     }
 }
 
-void Server::send_json(const std::string& json_data)
+void Server::send_json(const boost::json::value& json_data)
 {
     if (client_socket_ && client_socket_->is_open())
     {
         try
         {
-            boost::asio::write(*client_socket_, boost::asio::buffer(json_data));
+            std::string serialized = boost::json::serialize(json_data);
+            boost::asio::write(*client_socket_, boost::asio::buffer(serialized));
             std::cout << "Sent JSON to client.\n";
         }
         catch (const std::exception& e)
@@ -45,3 +47,7 @@ void Server::send_json(const std::string& json_data)
     }
 }
 
+void Server::send_json(const boost::json::object& obj)
+{
+    send_json(boost::json::value(obj));
+}

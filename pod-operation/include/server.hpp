@@ -2,17 +2,17 @@
 #define SERVER_HPP
 
 #include <boost/asio.hpp>
-#include <string>
+#include <boost/json.hpp>
+#include <memory>
 
 class Server {
 public:
-    Server(int port);
-    
-    // Initializes the server and waits for one client connection
+    explicit Server(int port);
     void initialize();
 
-    // Sends JSON string to connected client
-    void send_json(const std::string& json_data);
+    // Send boost::json objects or values
+    void send_json(const boost::json::value& json_data);
+    void send_json(const boost::json::object& obj);
 
 private:
     int port_;

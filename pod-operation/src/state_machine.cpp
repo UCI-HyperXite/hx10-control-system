@@ -1,7 +1,7 @@
 #include "../include/state_machine.hpp"
 
 StateMachine::StateMachine()
-    : currentState(PodState::INIT), server(8080)  // Proper member initialization
+    : currentState(PodState::INIT), server(8080)  
 {
     possibleStates[PodState::INIT].insert(PodState::LOAD);
     possibleStates[PodState::LOAD].insert(PodState::PRECHARGE);
@@ -31,6 +31,47 @@ void StateMachine::transitionTo(PodState newState) {
     }
 }
 
+bool StateMachine::validateSensorSnapshot(const boost::json::object& snapshot) {
+    bool valid = true;
+
+    auto check_range = [&](const std::string& key, double min, double max) {
+        if (!snapshot.if_contains(key)) return;
+        double value = snapshot.at(key).as_double();
+        if (value < min || value > max) {
+            std::cerr << "[ERROR] " << key << " out of range: " << value
+                      << " (expected " << min << " - " << max << ")\n";
+            valid = false;
+        }
+    };
+
+    check_range("gx", -500, 500);
+    check_range("gy", -500, 500);
+    check_range("gz", -500, 500);
+
+    check_range("ax", -10, 10);
+    check_range("ay", -10, 10);
+    check_range("az", -10, 10);
+
+    check_range("pod_height_mm", 0, 500); 
+
+    check_range("pressure_downstream", 0, 300);
+    check_range("pressure_upstream", 0, 5000);
+
+    check_range("pressure_left_coolant", 0, 300);
+    check_range("pressure_right_coolant", 0, 300);
+
+    check_range("temp_ads1", -40, 125);
+    check_range("temp_ads2", -40, 125);
+    check_range("temp_ads3", -40, 125);
+    check_range("temp_ads4", -40, 125);
+
+    check_range("encoder_distance", 0, 1000); 
+    check_range("encoder_velocity", -50, 50);  
+
+    return valid;
+}
+
+
 void StateMachine::fsm_tick() {
     handleState(currentState);
 }
@@ -47,12 +88,21 @@ void StateMachine::handleState(PodState currState) {
     }
 }
 
-void StateMachine::readSensorValues() {
+    void StateMachine::readSensorValues() {
     std::cout << "[INFO] Reading from all sensors...\n";
     io_context.restart();
     auto snapshot = read_all_sensors(io_context, sensors);
     io_context.run();
     std::cout << "[INFO] Sensor read complete.\n";
+
+    std::cout << "[INFO] Snapshot:\n" << boost::json::serialize(snapshot) << "\n";
+
+    server.send_json(snapshot);
+
+    if (!validateSensorSnapshot(snapshot)) {
+        std::cerr << "[WARNING] Sensor validation failed. Transitioning to FAULT state.\n";
+        transitionTo(PodState::FAULT);
+    }
 }
 
 void StateMachine::runInit() {
