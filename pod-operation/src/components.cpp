@@ -45,7 +45,7 @@ void readCoolantPressure(PressureTransducer* pressure_transducer){
 }
 
 // ads function for threading call
-void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
+void readADS1015Thermistor(Adafruit_ADS1115* ads) {
     ads->setGain(GAIN);
     ads->begin();
 

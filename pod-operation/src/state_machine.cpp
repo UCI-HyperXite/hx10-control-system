@@ -1,63 +1,151 @@
 #include "../include/state_machine.hpp"
 
-StateMachine::StateMachine() : currentState(PodState::INIT) {
-    // stubbed functions w/ target states
-    registerEventAction(PodState::INIT, []() { return false; }, []() { std::cout << "[FSM] INIT -> LOAD action triggered." << std::endl; }, PodState::LOAD);
-    registerEventAction(PodState::LOAD, []() { return false; }, []() { std::cout << "[FSM] LOAD -> PRECHARGE action triggered." << std::endl; }, PodState::PRECHARGE);
-    registerEventAction(PodState::PRECHARGE, []() { return false; }, []() { std::cout << "[FSM] PRECHARGE -> START action triggered." << std::endl; }, PodState::START);
-    registerEventAction(PodState::START, []() { return false; }, []() { std::cout << "[FSM] START -> STOP action triggered." << std::endl; }, PodState::STOP);
-    registerEventAction(PodState::STOP, []() { return false; }, []() { std::cout << "[FSM] STOP -> FAULT action triggered." << std::endl; }, PodState::FAULT);
-    registerEventAction(PodState::FAULT, []() { return false; }, []() { std::cout << "[FSM] FAULT -> HALT action triggered." << std::endl; }, PodState::HALT);
-    registerEventAction(PodState::HALT, []() { return false; }, []() { std::cout << "[FSM] HALT state entered." << std::endl; }, PodState::HALT);
+StateMachine::StateMachine()
+    : currentState(PodState::INIT), server(8080)  // Proper member initialization
+{
+    possibleStates[PodState::INIT].insert(PodState::LOAD);
+    possibleStates[PodState::LOAD].insert(PodState::PRECHARGE);
+    possibleStates[PodState::LOAD].insert(PodState::FAULT);
+    possibleStates[PodState::PRECHARGE].insert(PodState::START);
+    possibleStates[PodState::PRECHARGE].insert(PodState::STOP);
+    possibleStates[PodState::PRECHARGE].insert(PodState::FAULT);
+    possibleStates[PodState::START].insert(PodState::STOP);
+    possibleStates[PodState::START].insert(PodState::HALT);
+    possibleStates[PodState::START].insert(PodState::FAULT);
+    possibleStates[PodState::STOP].insert(PodState::LOAD);
+    possibleStates[PodState::STOP].insert(PodState::START);
+    possibleStates[PodState::STOP].insert(PodState::FAULT);
+    possibleStates[PodState::FAULT].insert(PodState::HALT);
+    possibleStates[PodState::FAULT].insert(PodState::INIT);
 }
 
 void StateMachine::transitionTo(PodState newState) {
-    if (currentState == PodState::HALT) {
-        std::cout << "FSM HALTED" << std::endl;
-        return;
+    std::lock_guard<std::mutex> lock(state_mutex);
+
+    if (possibleStates[currentState].find(newState) != possibleStates[currentState].end()) {
+        currentState = newState;
+        std::cout << "Successfully switched to state: " << static_cast<int>(newState) << "\n";
+    } else {
+        std::cout << "Invalid State Transition from " << static_cast<int>(currentState)
+                  << " to " << static_cast<int>(newState) << "\n";
     }
+}
+
+void StateMachine::fsm_tick() {
+    handleState(currentState);
+}
+
+void StateMachine::handleState(PodState currState) {
+    switch (currState) {
+        case PodState::INIT:      runInit(); break;
+        case PodState::LOAD:      runLoad(); break;
+        case PodState::PRECHARGE: runPrecharge(); break;
+        case PodState::START:     runStart(); break;
+        case PodState::STOP:      runStop(); break;
+        case PodState::FAULT:     runFault(); break;
+        case PodState::HALT:      runHalt(); break;
+    }
+}
+
+void StateMachine::readSensorValues() {
+    std::cout << "[INFO] Reading from all sensors...\n";
+    io_context.restart();
+    auto snapshot = read_all_sensors(io_context, sensors);
+    io_context.run();
+    std::cout << "[INFO] Sensor read complete.\n";
+}
+
+void StateMachine::runInit() {
+    std::cout << "[INIT] Initializing server...\n";
+    server.initialize();
+  
+    readSensorValues();
+
+    std::cout << "Initializing Brakes...\n";
+    initializeBrakes();
+    std::cout << "Brakes initialized\n";
+
+    std::cout << "Closing Brakes\n";
+    engageBrakes();
+    std::cout << "Brakes Closed\n";
+}
+
+
+void StateMachine::runLoad() {
+    std::cout << "Opening brakes...\n";
+    disengageBrakes();  
+    std::cout << "Brakes opened\n";
     
-    std::cout << "FSM transitioning from " << static_cast<int>(currentState) << " to " << static_cast<int>(newState) << std::endl;
-    currentState = newState;
-    handleState();
+    readSensorValues();
 }
 
-void StateMachine::handleState() {
-    if (fsmTransitions.find(currentState) != fsmTransitions.end()) {
-        auto &transition = fsmTransitions[currentState];
-        if (transition.event && transition.event()) {
-            if (transition.action) {
-                transition.action();
-            }
-            transitionTo(transition.targetState);
-        }
-    }
-    controlLED();
+void StateMachine::runPrecharge() {
+    
+    std::cout << "Opening brakes...\n";
+    disengageBrakes();
+    std::cout << "Brakes opened\n";
+
+    std::cout << "Initializing High Voltage System\n";
+    initializeHighVoltageSystem();
+    std::cout << "High System Voltage Initialized\n";
+    
+    std::cout << "Turning on High Voltage System\n";
+    engageContactors();    
+    std::cout << "High voltage System on\n";
+
+    readSensorValues();
+
+    transitionTo(PodState::START);
+
 }
 
-void StateMachine::update() {
-    if (fsmTransitions.find(currentState) != fsmTransitions.end()) {
-        auto &transition = fsmTransitions[currentState];
-        if (transition.event && transition.event()) {
-            transitionTo(transition.targetState);
-        }
-    }
+void StateMachine::runStart() {
+    std::cout << "Opening brakes...\n";
+    disengageBrakes();
+    std::cout << "Brakes opened\n";
+
+    //throttleCode();
+    
+    readSensorValues();
 }
 
-PodState StateMachine::getCurrentState() const {
-    return currentState;
+void StateMachine::runStop() {
+    std::cout << "Closing brakes...\n";
+    engageBrakes();
+    std::cout << "Brakes closed\n";
+
+    std::cout << "Turning off High Voltage System\n";
+    //throttle to 0
+    std::cout << "High voltage System off\n";
+
+    readSensorValues();
+
 }
 
-void StateMachine::registerEventAction(PodState state, std::function<bool()> event, std::function<void()> action, PodState targetState) {
-    fsmTransitions[state] = {event, action, targetState};
+void StateMachine::runFault() {
+  
+    std::cout << "Closing brakes...\n";
+    engageBrakes();
+    std::cout << "Brakes closed\n";
+
+    std::cout << "Cutting off power to HV System\n";
+    disengageContactors();
+    std::cout << "Power System killed\n";
+
+    readSensorValues();
+
+    transitionTo(PodState::HALT);
+
+  
 }
 
-void StateMachine::controlLED() {
-    // if (currentState == PodState::START) {
-    //     gpio_set_led_color("green");
-    // } else if (currentState == PodState::STOP || currentState == PodState::INIT) {
-    //     gpio_set_led_color("off");
-    // } else if (currentState == PodState::HALT) {
-    //     gpio_blink_led("red");
-    // }
+void StateMachine::runHalt() {
+    std::cout << "Closing brakes...\n";
+    engageBrakes();
+    std::cout << "Brakes closed\n";
+
+    readSensorValues();
+
+    transitionTo(PodState::INIT);
 }
+

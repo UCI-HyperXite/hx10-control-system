@@ -23,7 +23,7 @@ void readPneumaticPressure(PressureTransducer* pressure_transducer);
 
 void readCoolantPressure(PressureTransducer* pressure_transducer);
 
-void readADS1015ThermistorLoop(Adafruit_ADS1115* ads);
+void readADS1015Thermistor(Adafruit_ADS1115* ads);
 
 void readEncoder(WheelEncoder* encoder);
 
