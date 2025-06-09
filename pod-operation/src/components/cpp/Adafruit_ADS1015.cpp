@@ -10,6 +10,8 @@
 
 #include "../../../include/components/c/Adafruit_ADS1015.h"
 
+adsGain_t GAIN = GAIN_TWOTHIRDS;  
+
 /**************************************************************************/
 /*!
     @brief  Abstract away platform differences in Arduino wire library

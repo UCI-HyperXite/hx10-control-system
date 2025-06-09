@@ -101,7 +101,8 @@ typedef enum
   GAIN_SIXTEEN      = ADS1015_REG_CONFIG_PGA_0_256V
 } adsGain_t;
 
-extern adsGain_t GAIN = GAIN_TWOTHIRDS;
+// extern adsGain_t GAIN = GAIN_TWOTHIRDS;
+extern adsGain_t GAIN;
 
 class Adafruit_ADS1015
 {
