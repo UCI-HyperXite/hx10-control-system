@@ -25,12 +25,13 @@ void encoderSimThread() {
     pinMode(pinB, OUTPUT);
 
     bool state = false;
+    std::cout << "Encoder emulation running" << "\n";
     while (encoderRunning) {
         digitalWrite(pinA, state);
-        std::this_thread::sleep_for(std::chrono::microseconds(500)); // ~1kHz
+        std::this_thread::sleep_for(std::chrono::microseconds(2000)); // ~1kHz
 
         digitalWrite(pinB, state);
-        std::this_thread::sleep_for(std::chrono::microseconds(500));
+        std::this_thread::sleep_for(std::chrono::microseconds(2000));
 
         state = !state;
     }
@@ -120,7 +121,7 @@ int main() {
     std::thread encoderThread(encoderSimThread);
     std::cout << "Pin 17 written to 1";
     // std::this_thread::sleep_for(std::chrono::seconds(10));
-    sleep(30);
+    sleep(10);
     
     for (int value = 0; value <= (MCP4725::MAX_VALUE*0.5); value += 50) {
         if (!dac.setThrottle(value)) {
