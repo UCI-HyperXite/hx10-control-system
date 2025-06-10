@@ -10,10 +10,35 @@
 #include <linux/i2c-dev.h>
 #include "MCP4725.h"
 #include <wiringPi.h>
+#include <atomic>
 extern "C" {
     #include "gpio.h"    
 }
 
+std::atomic<bool> encoderRunning(false);
+
+void encoderSimThread() {
+    const int pinA = 23;  // Encoder A
+    const int pinB = 24;  // Encoder B
+
+    pinMode(pinA, OUTPUT);
+    pinMode(pinB, OUTPUT);
+
+    bool state = false;
+    while (encoderRunning) {
+        digitalWrite(pinA, state);
+        std::this_thread::sleep_for(std::chrono::microseconds(500)); // ~1kHz
+
+        digitalWrite(pinB, state);
+        std::this_thread::sleep_for(std::chrono::microseconds(500));
+
+        state = !state;
+    }
+
+    // Ensure both pins are LOW when done
+    digitalWrite(pinA, LOW);
+    digitalWrite(pinB, LOW);
+}
 
 MCP4725::MCP4725(int address, const char* i2cDevice)
     : i2c_fd(-1), i2c_addr(address), i2c_path(i2cDevice) {}
@@ -71,7 +96,8 @@ int main() {
     pinMode(17, OUTPUT);      
     MCP4725 dac;  // Uses default address 0x60 and default device "/dev/i2c-1"
 
-    std::cout << "Testing MCP4725 throttle output...\n";
+    std::cout << "Starting throttle and encoder simulation...\n";
+    
     
     // Ramp up
     if (!dac.setThrottle(0)) {
@@ -79,6 +105,7 @@ int main() {
     } else {
         std::cout << "Throttle set to: " << 0 << "\n";
     }
+    
     // while (true){
     //     digitalWrite(17, HIGH);
     //     std::cout << "1" << "\n";
@@ -89,6 +116,8 @@ int main() {
     //     sleep(1);
     // }
     digitalWrite(17, HIGH);
+    encoderRunning = true;
+    std::thread encoderThread(encoderSimThread);
     std::cout << "Pin 17 written to 1";
     // std::this_thread::sleep_for(std::chrono::seconds(10));
     sleep(30);
@@ -111,6 +140,8 @@ int main() {
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
+    encoderRunning = false;
+    encoderThread.join();
     digitalWrite(17, LOW);
     std::cout << "DAC test complete.\n";
     return 0;
