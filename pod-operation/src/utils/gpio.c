@@ -5,7 +5,7 @@
 #include "../../include/utils/gpio.h"
 
 void initailizeGPIOs(void){
-    wiringPiSetup();
+    wiringPiSetupGpio();
 
     pinMode(VL53L0X_FRONT, INPUT);
     pinMode(VL53L0X_BACK, INPUT);

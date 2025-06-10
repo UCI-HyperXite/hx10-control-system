@@ -9,9 +9,9 @@ typedef enum{
     WHEEL_ENCODER_A = 14,
     WHEEL_ENCODER_B = 15,
     VL6180X = 16,
-    CONTACTOR_RELAY = 20,
-	SIGNAL_LIGHT_RELAY = 21,
-	PNEUMATICS_RELAY = 26,
+    CONTACTOR_RELAY = 19,
+    SIGNAL_LIGHT_RELAY = 18,
+    PNEUMATICS_RELAY = 20,
 } GPIOPins;
 
 void initailizeGPIOs(void);

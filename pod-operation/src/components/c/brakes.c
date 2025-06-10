@@ -1,4 +1,5 @@
 #include "../../../include/components/c/brakes.h"
+#include <wiringPi.h>
 
 struct Brakes brake;
 
@@ -7,9 +8,9 @@ void initializeBrakes(){
 }
 
 void engageBrakes(){
-    setHigh(brake.pin);
+    setLow(brake.pin);
 }
 
 void disengageBrakes(){
-    setLow(brake.pin);
+    setHigh(brake.pin);
 }

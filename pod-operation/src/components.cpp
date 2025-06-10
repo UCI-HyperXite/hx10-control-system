@@ -78,15 +78,15 @@ void readADS1015ThermistorLoop(Adafruit_ADS1115* ads) {
     }
 }
 
-void readEncoder(WheelEncoder* encoder){
-    while (true) {
-        float distance = encoder->get_distance();
-        float velocity = encoder->get_velocity();
+// void readEncoder(WheelEncoder* encoder){
+//     while (true) {
+//         float distance = encoder->get_distance();
+//         float velocity = encoder->get_velocity();
 
-        std::cout << "Distance: " << distance << " m, "
-                  << "Velocity: " << velocity << " m/s\n";
+//         std::cout << "Distance: " << distance << " m, "
+//                   << "Velocity: " << velocity << " m/s\n";
 
-        usleep(100000);
-    }
-}
+//         usleep(100000);
+//     }
+// }
 

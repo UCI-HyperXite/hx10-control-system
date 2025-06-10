@@ -9,8 +9,8 @@ struct HighVoltageSystem {
 };
 
 void initializeHighVoltageSystem();
-void engageContactors();
-void disengageContactors();
+void closeContactors();
+void openContactors();
 
 
 #endif

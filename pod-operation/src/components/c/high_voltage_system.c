@@ -6,10 +6,10 @@ void initializeHighVoltageSystem(){
     highVoltageSystem.pin = CONTACTOR_RELAY;
 }
 
-void engageContactors(){
+void closeContactors(){
     setHigh(highVoltageSystem.pin);
 }
 
-void disengageContactors(){
+void openContactors(){
     setLow(highVoltageSystem.pin);
 }
