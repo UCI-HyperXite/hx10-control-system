@@ -5,9 +5,8 @@
 #include <iomanip>
 #include <algorithm>
 
-// Anonymous namespace for helper functions local to this file
 namespace {
-    // Helper to convert a two-character hex string to a byte
+    // convert a two-character hex string to a byte
     uint8_t hex_to_byte(const std::string& hex) {
         return static_cast<uint8_t>(std::stoul(hex, nullptr, 16));
     }
