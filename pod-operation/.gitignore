@@ -1,9 +1,17 @@
-# Ignore C and C++ build files
 /build/
+/bin/
+/obj/
+
 *.o
-*.so
 *.a
+*.so
+*.so.*
+*.dll
+*.exe
 *.out
 *.elf
-CMakeCache.txt
-CMakeFiles/
+.cache/
+.clangd/
+*.idx
+*.d
+*.log
