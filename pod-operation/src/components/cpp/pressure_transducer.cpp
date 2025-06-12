@@ -12,7 +12,7 @@ struct Reference
 
     Reference(float plo, float phi, float clo, float chi)
         : pressure_lo(plo), pressure_span(phi - plo),
-          current_lo(clo), current_span(chi - clo) {}
+        current_lo(clo), current_span(chi - clo) {}
 
     static Reference upstream() { return Reference(0.0f, 5000.0f, 4.0f, 20.0f); }
     static Reference downstream() { return Reference(0.0f, 300.0f, 4.0f, 20.0f); }
