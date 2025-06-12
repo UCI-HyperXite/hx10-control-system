@@ -1,13 +1,15 @@
 #ifndef BRAKES_H
-#define BRAKES
+#define BRAKES_H
+
+#include <wiringPi.h>
+#include "../../utils/gpio.h"
 
 struct Brakes {
     int pin;
 };
 
-
-void engage(int pin);
-void disengage(int pin);
-
+void initializeBrakes();
+void engageBrakes();
+void disengageBrakes();
 
 #endif
