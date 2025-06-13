@@ -6,7 +6,7 @@
 class MCP4725
 {
 public:
-    static const int MAX_VALUE = 4095;
+    static const int MAX_VALUE = 1000;
 
     MCP4725(int address = 0x62, const char *i2cDevice = "/dev/i2c-1");
     ~MCP4725();

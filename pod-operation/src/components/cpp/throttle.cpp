@@ -93,8 +93,10 @@ bool MCP4725::setThrottle(int value) {
 
 
 int main() {
-    wiringPiSetupGpio();         
-    pinMode(17, OUTPUT);      
+    initailizeGPIOs();      
+    void initializeBrakes();     
+    disengageBrakes(); // Ensure brakes are disengaged at start
+
     MCP4725 dac;  // Uses default address 0x60 and default device "/dev/i2c-1"
 
     std::cout << "Starting throttle and encoder simulation...\n";
@@ -142,6 +144,7 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     encoderRunning = false;
+    engageBrakes();
     encoderThread.join();
     digitalWrite(17, LOW);
     std::cout << "DAC test complete.\n";
