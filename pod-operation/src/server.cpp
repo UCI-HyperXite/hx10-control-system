@@ -58,9 +58,9 @@ void Server::do_session(beast::tcp_stream&& stream)
 
             // Parse and prepare response
             json::object response;
-            if (msg == "run") response["state"] = "START";
-            else if (msg == "stop") response["state"] = "STOP";
-            else if (msg == "halt") response["state"] = "HALT";
+            if (msg == "run") response["state"] = "Running";
+            else if (msg == "stop") response["state"] = "Stopped";
+            else if (msg == "halt") response["state"] = "Halted";
             else response["error"] = "Unknown command";
 
             response["status"] = "received";
