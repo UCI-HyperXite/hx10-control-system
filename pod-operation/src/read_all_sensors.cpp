@@ -1,5 +1,4 @@
 #include "read_all_sensors.hpp"
-#include "components.hpp"
 #include <iostream>
 
 namespace json = boost::json;

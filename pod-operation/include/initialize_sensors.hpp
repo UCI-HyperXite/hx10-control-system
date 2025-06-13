@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "components.hpp" 
 class SensorInitializer {
 public:
     SensorInitializer(); 
