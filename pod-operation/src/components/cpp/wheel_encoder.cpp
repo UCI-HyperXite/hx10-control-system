@@ -8,42 +8,21 @@
 #include <unistd.h> 
 #include <atomic>
 #include "../../../include/utils/gpio.h"
+#include "../../../include/components/cpp/wheel_encoder.hpp"
+#include <stdexcept>
+#include <csignal>
 
-constexpr float WHEEL_DIAMETER = 0.0762f;
-constexpr float ENCODER_RESOLUTION = 16.0f;
-constexpr float DISTANCE_PER_COUNT = WHEEL_DIAMETER * static_cast<float>(M_PI) / ENCODER_RESOLUTION;
+WheelEncoder* WheelEncoder::instance = nullptr;
 
-GPIOPins WHEEL_ENCODER_A_PIN = WHEEL_ENCODER_A;
-GPIOPins WHEEL_ENCODER_B_PIN = WHEEL_ENCODER_B;
-
-enum class Level : int8_t {
-    Low = 0,
-    High = 1
-};
-
-enum class EncoderState : int8_t {
-    A = 0b00,
-    B = 0b01,
-    C = 0b11,
-    D = 0b10,
-    Unknown = -1
-};
-
-enum class EncoderDiff : int8_t {
-    Backwards = -1,
-    Stationary = 0,
-    Forwards = 1,
-    Undersampling = 2,
-    Unknown = 3
-};
 
 EncoderDiff operator-(EncoderState current, EncoderState previous) {
+    // The quadrature states are ordered A -> B -> C -> D -> A for forward rotation.
     int8_t diff = (static_cast<int8_t>(current) - static_cast<int8_t>(previous) + 5) % 4 - 1;
     switch (diff) {
         case -1: return EncoderDiff::Backwards;
         case 0:  return EncoderDiff::Stationary;
         case 1:  return EncoderDiff::Forwards;
-        case 2:  return EncoderDiff::Undersampling;
+        case 2:  return EncoderDiff::Undersampling; // A jump of 2 indicates a missed state
         default: return EncoderDiff::Unknown;
     }
 }
@@ -74,76 +53,81 @@ Level read_level(int pin) {
     return digitalRead(pin) == HIGH ? Level::High : Level::Low;
 }
 
-class WheelEncoder {
-private:
-    int pin_a;
-    int pin_b;
 
-    std::atomic<int16_t> counter{0};
-    std::atomic<float> velocity{0.0f};
-
-    EncoderState last_state = EncoderState::Unknown;
-    std::chrono::steady_clock::time_point last_time = std::chrono::steady_clock::now();
-
-    static WheelEncoder* instance;
-
-public:
-    WheelEncoder(int a, int b) : pin_a(a), pin_b(b) {
-        wiringPiSetup();
-        pinMode(pin_a, INPUT);
-        pullUpDnControl(pin_a, PUD_DOWN);
-        pinMode(pin_b, INPUT);
-        pullUpDnControl(pin_b, PUD_DOWN);
-
-        last_state = read_state();
-
-        instance = this;
-        wiringPiISR(pin_a, INT_EDGE_BOTH, &WheelEncoder::isr_a);
-        wiringPiISR(pin_b, INT_EDGE_BOTH, &WheelEncoder::isr_b);
+WheelEncoder::WheelEncoder(int a, int b) : pin_a(a), pin_b(b) {
+    if (instance != nullptr) {
+        throw std::runtime_error("WheelEncoder instance already exists. This class is a singleton.");
     }
 
-    float get_distance() const {
-        return static_cast<float>(counter.load()) * DISTANCE_PER_COUNT;
+    // Set pin modes to input and enable pull-down resistors
+    pinMode(pin_a, INPUT);
+    pullUpDnControl(pin_a, PUD_DOWN);
+    pinMode(pin_b, INPUT);
+    pullUpDnControl(pin_b, PUD_DOWN);
+
+    last_state = read_state();
+    last_time = std::chrono::steady_ck::now();
+
+    instance = this;
+
+    if (wiringPiISR(pin_a, INT_EDGE_BOTH, &WheelEncoder::isr_a) < 0) {
+        throw std::runtime_error("Failed to set up ISR for encoder pin A.");
+    }
+    if (wiringPiISR(pin_b, INT_EDGE_BOTH, &WheelEncoder::isr_b) < 0) {
+        throw std::runtime_error("Failed to set up ISR for encoder pin B.");
+    }
+    std::cout << "WheelEncoder initialized on pins " << pin_a << " and " << pin_b << std::endl;
+}
+
+WheelEncoder::~WheelEncoder() {
+    instance = nullptr;
+    std::cout << "WheelEncoder destroyed." << std::endl;
+}
+
+
+float WheelEncoder::get_distance() const {
+    return static_cast<float>(counter.load()) * DISTANCE_PER_COUNT;
+}
+
+float WheelEncoder::get_velocity() const {
+    return velocity.load();
+}
+
+EncoderState WheelEncoder::read_state() const {
+    return encode_state(read_level(pin_a), read_level(pin_b));
+}
+
+void WheelEncoder::handle_interrupt() {
+    auto current_time = std::chrono::steady_clock::now();
+    EncoderState current_state = read_state();
+    
+    EncoderDiff inc = current_state - last_state;
+
+    if (inc == EncoderDiff::Undersampling || inc == EncoderDiff::Unknown) {
+        last_state = current_state;
+        return;
     }
 
-    float get_velocity() const {
-        return velocity.load();
+    std::chrono::duration<float> dt = current_time - last_time;
+    if (inc != EncoderDiff::Stationary && dt.count() > 0.00001f) { // 10 microsec debounce
+        float vel = (DISTANCE_PER_COUNT * to_float(inc)) / dt.count();
+        
+        velocity.store(vel);
+        last_time = current_time;
     }
+    
+    counter.fetch_add(to_int(inc));
+    last_state = current_state;
+}
 
-private:
-    EncoderState read_state() const {
-        return encode_state(read_level(pin_a), read_level(pin_b));
+void WheelEncoder::isr_a() {
+    if (instance) {
+        instance->handle_interrupt();
     }
+}
 
-    void handle_interrupt() {
-        auto state = read_state();
-        EncoderDiff inc = state - last_state;
-
-        if (inc == EncoderDiff::Undersampling || inc == EncoderDiff::Unknown) {
-            return;
-        }
-
-        auto now = std::chrono::steady_clock::now();
-        std::chrono::duration<float> dt = now - last_time;
-
-        if (inc != EncoderDiff::Stationary && dt.count() > 0.00001f) {
-            float vel = DISTANCE_PER_COUNT * to_float(inc) / dt.count();
-
-            // Decay logic
-            if (vel * dt.count() > DISTANCE_PER_COUNT) {
-                vel = DISTANCE_PER_COUNT * std::copysign(1.0f, vel) / dt.count();
-            }
-
-            velocity.store(vel);
-            last_time = now;
-        }
-
-        counter.fetch_add(to_int(inc));
-        last_state = state;
+void WheelEncoder::isr_b() {
+    if (instance) {
+        instance->handle_interrupt();
     }
-
-    static void isr_a() { if (instance) instance->handle_interrupt(); }
-    static void isr_b() { if (instance) instance->handle_interrupt(); }
-};
-
-WheelEncoder* WheelEncoder::instance = nullptr;
+}

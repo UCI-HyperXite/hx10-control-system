@@ -25,6 +25,7 @@ set(pod_operation_sources
     src/components/cpp/pressure_transducer.cc
     src/components/cpp/signal_light.cpp
     src/components/cpp/voltage.cpp
+    src/components/cpp/wheel_encoder.cpp
     
 
     src/components.cpp
