@@ -62,7 +62,7 @@ int main() {
 	Adafruit_ADS1115 ads4(0x4B);
 	std::future<void> adsFut4 = std::async(std::launch::async, readADS1015ThermistorLoop, &ads4);
 
-	WheelEncoder encoder(WHEEL_ENCODER_A_PIN, WHEEL_ENCODER_B_PIN);
+	WheelEncoder encoder(WHEEL_ENCODER_A, WHEEL_ENCODER_B);
 	std::future<void> movement = std::async(std::launch::async, readEncoder, &encoder);
 
 	orientation.wait();

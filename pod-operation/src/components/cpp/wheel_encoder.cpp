@@ -66,7 +66,7 @@ WheelEncoder::WheelEncoder(int a, int b) : pin_a(a), pin_b(b) {
     pullUpDnControl(pin_b, PUD_DOWN);
 
     last_state = read_state();
-    last_time = std::chrono::steady_ck::now();
+    last_time = std::chrono::steady_clock::now();
 
     instance = this;
 
