@@ -11,11 +11,24 @@
 #include "MCP4725.h"
 #include <wiringPi.h>
 #include <atomic>
+#include "components/c/brakes.h"
+#include "components/c/high_voltage_system.h"
 extern "C" {
     #include "gpio.h"    
 }
 
 std::atomic<bool> encoderRunning(false);
+std::atomic<bool> shutdownRequested(false);
+
+void monitorUserInput() {
+    std::string input;
+    std::getline(std::cin, input);
+    if (input.empty()) {
+        std::cout << "\nBlank input received. Requesting shutdown...\n";
+        shutdownRequested = true;
+    }
+}
+
 
 void encoderSimThread() {
     const int pinA = 23;  // Encoder A
@@ -91,14 +104,23 @@ bool MCP4725::setThrottle(int value) {
     return success;
 }
 
+void safeShutdown(MCP4725& dac) {
+    std::cout << "[*] Performing safe shutdown...\n";
+    dac.setThrottle(0);
+    digitalWrite(17, LOW);
+    openContactors();
+    engageBrakes();
+    encoderRunning = false;
+}
+
 
 int main() {
     wiringPiSetupGpio();         
     pinMode(17, OUTPUT);      
     MCP4725 dac;  // Uses default address 0x60 and default device "/dev/i2c-1"
-
+    initializeBrakes();
+    initializeHighVoltageSystem();
     std::cout << "Starting throttle and encoder simulation...\n";
-    
     
     // Ramp up
     if (!dac.setThrottle(0)) {
@@ -106,24 +128,28 @@ int main() {
     } else {
         std::cout << "Throttle set to: " << 0 << "\n";
     }
+    std::thread inputThread(monitorUserInput);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    if (shutdownRequested) {
+        safeShutdown(dac);
+        goto cleanup;
+    }
+    disengageBrakes();
+    openContactors();
     
-    // while (true){
-    //     digitalWrite(17, HIGH);
-    //     std::cout << "1" << "\n";
-    //     //std::this_thread::sleep_for(std::chrono::seconds(1));
-    //     sleep(1);
-    //     digitalWrite(17, LOW);
-    //     std::cout << "0" << "\n";
-    //     sleep(1);
-    // }
     digitalWrite(17, HIGH);
     encoderRunning = true;
     std::thread encoderThread(encoderSimThread);
     std::cout << "Pin 17 written to 1";
     // std::this_thread::sleep_for(std::chrono::seconds(10));
-    sleep(10);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    if (shutdownRequested) {
+        safeShutdown(dac);
+        goto cleanup;
+    }
     
     for (int value = 0; value <= (MCP4725::MAX_VALUE*0.5); value += 50) {
+        if (shutdownRequested) break; 
         if (!dac.setThrottle(value)) {
             std::cerr << "Error: Failed to set value " << value << "\n";
         } else {
@@ -134,6 +160,7 @@ int main() {
 
     // Ramp down
     for (int value = MCP4725::MAX_VALUE*0.5; value >= 0; value -= 100) {
+        if (shutdownRequested) break; 
         if (!dac.setThrottle(value)) {
             std::cerr << "Error: Failed to set value :" << value << "\n";
         } else {
@@ -141,9 +168,10 @@ int main() {
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
+    safeShutdown(dac);
     encoderRunning = false;
-    encoderThread.join();
-    digitalWrite(17, LOW);
-    std::cout << "DAC test complete.\n";
+    if (encoderThread.joinable()) encoderThread.join();
+    if (inputThread.joinable()) inputThread.join();
+    std::cout << "Run complete.\n";
     return 0;
 }
