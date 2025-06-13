@@ -10,6 +10,7 @@
 #include <linux/i2c-dev.h>
 #include <wiringPi.h>
 #include <atomic>
+#include <chrono>
 
 extern "C" {
     #include "gpio.h"
@@ -109,7 +110,7 @@ void safeShutdown(MCP4725& dac) {
     std::cout << "[*] Performing safe shutdown...\n";
     dac.setThrottle(0);
     digitalWrite(17, LOW);
-    openContactors();
+    // openContactors();
     engageBrakes();
     encoderRunning = false;
 }
@@ -120,6 +121,7 @@ int main() {
     initailizeGPIOs();
 
 	initializeBrakes();
+
     // engageBrakes();
     // std::cout << "Brakes closed" << std::endl;
     // std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -132,20 +134,30 @@ int main() {
   
     std::cout << "Starting throttle and encoder simulation...\n";
     
-    // if (!dac.setThrottle(0)) {
-    //     std::cerr << "Error: Failed to set value " << 0 << "\n";
-    // } else {
-    //     std::cout << "Throttle set to: " << 0 << "\n";
-    // }
+    if (!dac.setThrottle(0)) {
+        std::cerr << "Error: Failed to set value " << 0 << "\n";
+    } else {
+        std::cout << "Throttle set to: " << 0 << "\n";
+    }
     std::thread inputThread(monitorUserInput);
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    std::this_thread::sleep_for(std::chrono::seconds());
     if (shutdownRequested) {
         safeShutdown(dac);
         // goto cleanup;
     }
     disengageBrakes();
+    auto start = std::chrono::high_resolution_clock::now();
+    
     while (true){
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+        std::cout << "Elapsed time: " << elapsed.count() << "s\n";
         if (shutdownRequested) break; 
+        if (elapsed.count() >= 2){
+            shutdownRequested = true;
+            break;
+        }        
     }
     // openContactors();
     
@@ -154,35 +166,50 @@ int main() {
     // std::thread encoderThread(encoderSimThread);
     // std::cout << "Pin 17 written to 1";
     // // std::this_thread::sleep_for(std::chrono::seconds(10));
-    // std::this_thread::sleep_for(std::chrono::seconds(10));
-    // if (shutdownRequested) {
-    //     safeShutdown(dac);
-    //     // goto cleanup;
-    // }
-    
-    // for (int value = 0; value <= (MCP4725::MAX_VALUE*0.5); value += 50) {
-    //     if (shutdownRequested) break; 
-    //     if (!dac.setThrottle(value)) {
-    //         std::cerr << "Error: Failed to set value " << value << "\n";
-    //     } else {
-    //         std::cout << "Throttle set to: " << value << "\n";
-    //     }
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    // }
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    if (shutdownRequested) {
+        safeShutdown(dac);
+        std::cout << "STOPPED" << "\n";
+        // goto cleanup;
+    }
+    std::cout << "out" << "s\n";
+    for (int value = 0; value <= (MCP4725::MAX_VALUE*0.5); value += 50) {
+        if (shutdownRequested) break; 
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+        std::cout << "Elapsed time: " << elapsed.count() << "s\n";
+        if (elapsed.count() >= 2){
+            shutdownRequested = true;
+            break;
+        }       
+        if (!dac.setThrottle(value)) {
+            std::cerr << "Error: Failed to set value " << value << "\n";
+        } else {
+            std::cout << "Throttle set to: " << value << "\n";
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
 
-    // // Ramp down
-    // for (int value = MCP4725::MAX_VALUE*0.5; value >= 0; value -= 100) {
-    //     if (shutdownRequested) break; 
-    //     if (!dac.setThrottle(value)) {
-    //         std::cerr << "Error: Failed to set value :" << value << "\n";
-    //     } else {
-    //         std::cout << "Throttle set to: " << value << "\n";
-    //     }
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    // }
-    // safeShutdown(dac);
-    // encoderRunning = false;
-    // if (encoderThread.joinable()) encoderThread.join();
+    // Ramp down
+    for (int value = MCP4725::MAX_VALUE*0.5; value >= 0; value -= 100) {
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+        std::cout << "Elapsed time: " << elapsed.count() << "s\n";
+        if (shutdownRequested) break; 
+        if (elapsed.count() >= 2){
+            shutdownRequested = true;
+            break;
+        }       
+        if (!dac.setThrottle(value)) {
+            std::cerr << "Error: Failed to set value :" << value << "\n";
+        } else {
+            std::cout << "Throttle set to: " << value << "\n";
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    safeShutdown(dac);
+    encoderRunning = false;
+    if (encoderThread.joinable()) encoderThread.join();
     engageBrakes();
     if (inputThread.joinable()) inputThread.join();
     std::cout << "Run complete.\n";
