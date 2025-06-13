@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { Socket } from "socket.io-client";
-import { ioNamespace } from "./socketHandler";
+import { createWebSocket } from "./socketHandler";
 
 export enum State {
   Disconnected = "Disconnected",
@@ -13,23 +12,23 @@ export enum State {
   Fault = "Faulted",
 }
 
-interface ServerToClientEvents {
-  connect: () => void;
-  disconnect: (reason: Socket.DisconnectReason) => void;
-  serverResponse: (data: Partial<PodData>) => void;
-  fault: (data: string) => void;
-}
-
 interface Message {
   timestamp: Date;
   message: string;
 }
 
-interface ClientToServerEvents {
-  load: (ack: (data: string) => void) => void;
-  run: (ack: (data: string) => void) => void;
-  stop: (ack: (data: string) => void) => void;
-  halt: (ack: (data: string) => void) => void;
+export interface PodData {
+  connected: boolean;
+  state: State;
+  gyroscope: Gyroscope;
+  wheel_encoder: WheelEncoder;
+  acceleration: number;
+  position: Position;
+  temperature: Temperature;
+  pressure: Pressure;
+  voltage: Voltage;
+  current: Current;
+  messages: Message[];
 }
 
 interface WheelEncoder {
@@ -82,47 +81,20 @@ interface Current {
   lv_battb: number;
 }
 
-export interface PodData {
-  connected: boolean;
-  state: State;
-  gyroscope: Gyroscope;
-  wheel_encoder: WheelEncoder;
-  acceleration: number;
-  position: Position;
-  temperature: Temperature;
-  pressure: Pressure;
-  voltage: Voltage;
-  current: Current;
-  messages: Message[];
-}
-
 export const MOCK_POD_DATA: PodData = {
   connected: true,
   state: State.Running,
-  gyroscope: {
-    pitch: 0,
-    roll: 0,
-    yaw: 0,
-  },
-  wheel_encoder: {
-    distance: 10,
-    velocity: 50,
-  },
+  gyroscope: { pitch: 0, roll: 0, yaw: 0 },
+  wheel_encoder: { distance: 10, velocity: 50 },
   acceleration: 0,
-  position: {
-    position: 0,
-    track_height: 0,
-  },
+  position: { position: 0, track_height: 0 },
   temperature: {
     lim_temp: 25,
     coolant_temp: 20,
     ambient_temp: 22,
     batt_temp: 30,
   },
-  pressure: {
-    pneumatic_press: 100,
-    coolant_press: 90,
-  },
+  pressure: { pneumatic_press: 100, coolant_press: 90 },
   voltage: {
     hv_batt1: 46,
     hv_batt2: 45,
@@ -144,115 +116,94 @@ export const MOCK_POD_DATA: PodData = {
     lv_battb: 2,
   },
   messages: [
-    {
-      timestamp: new Date(),
-      message: "Pod initialized successfully",
-    },
+    { timestamp: new Date(), message: "Pod initialized successfully" },
   ],
 };
 
 type SetPodData = Dispatch<SetStateAction<PodData>>;
 
-// Not entirely safe to use but better than casting with `as`
-// From https://stackoverflow.com/a/60142095
-type Entries<T> = {
-  [K in keyof T]: [K, T[K]];
-}[keyof T][];
-
 class PodSocketClient {
-  socket: Socket<ServerToClientEvents, ClientToServerEvents>;
-  serverEvents: ServerToClientEvents;
+  socket: WebSocket | null = null;
   setPodData: SetPodData;
+  reconnectInterval = 5000;
 
   constructor(setPodData: SetPodData) {
-    this.socket = ioNamespace("control-station");
-    this.serverEvents = {
-      connect: this.onConnect.bind(this),
-      disconnect: this.onDisconnect.bind(this),
-      serverResponse: this.onData.bind(this),
-      fault: this.onFault.bind(this),
-    } as const;
     this.setPodData = setPodData;
+    this.connect();
   }
 
-  enable(): void {
-    this.socket.connect();
-    console.debug("Enabling socket event handlers");
-    (
-      Object.entries(this.serverEvents) as Entries<ServerToClientEvents>
-    ).forEach(([event, handler]) => {
-      this.socket.on(event, handler);
-    });
+  connect(): void {
+    this.socket = createWebSocket("control-station");
+
+    this.socket.onopen = () => {
+      console.log("Connected to WebSocket server");
+      this.setPodData((d) => ({ ...d, connected: true, state: State.Init }));
+    };
+
+    this.socket.onmessage = (event) => {
+      try {
+        const data: Partial<PodData> = JSON.parse(event.data);
+        console.log("Server response:", data);
+        this.setPodData((d) => ({ ...d, ...data }));
+      } catch (error) {
+        console.error("Error parsing server message:", error);
+      }
+    };
+
+    this.socket.onerror = (event) => {
+      console.error("WebSocket encountered an error:", event);
+    };
+
+    this.socket.onclose = (event) => {
+      console.log("WebSocket disconnected:", event.reason);
+      this.setPodData((d) => ({
+        ...d,
+        connected: false,
+        state: State.Disconnected,
+      }));
+      setTimeout(() => this.connect(), this.reconnectInterval); // Auto-reconnect
+    };
   }
 
-  disable(): void {
-    console.debug("Disabling socket event handlers");
-    Object.keys(this.serverEvents).forEach((event) => {
-      this.socket.off(event as keyof ServerToClientEvents);
-    });
-    this.socket.disconnect();
+  disconnect(): void {
+    if (this.socket) {
+      console.log("Closing WebSocket connection");
+      this.socket.close();
+      this.socket = null;
+    }
+  }
+
+  sendMessage(command: string): void {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(command);
+    } else {
+      console.warn("WebSocket not connected. Cannot send:", command);
+    }
   }
 
   sendLoad(): void {
-    this.socket.emit("load", (response: string) => {
-      console.log("Server acknowledged:", response);
-      this.addMessage(response, State.Load);
-    });
+    this.addMessage("Pod in Load state", State.Load);
+    this.sendMessage("load");
   }
 
   sendRun(): void {
-    this.socket.emit("run", (response: string) => {
-      console.log("Server acknowledged:", response);
-      this.addMessage(response, State.Running);
-    });
+    this.addMessage("Pod in Run state", State.Running);
+    this.sendMessage("run");
   }
 
   sendStop(): void {
-    this.socket.emit("stop", (response: string) => {
-      console.log("Server acknowledged:", response);
-      this.addMessage(response, State.Stopped);
-    });
+    this.addMessage("Pod in Stop state", State.Stopped);
+    this.sendMessage("stop");
   }
 
   sendHalt(): void {
-    this.socket.emit("halt", (response: string) => {
-      console.log("Server acknowledged:", response);
-      this.addMessage(response, State.Halted);
-    });
-  }
-
-  private onConnect(): void {
-    // TODO: On connecting, the state below should be what's provided by the pod
-    // if it's already running. Otherwise, the states should be State.Init
-    console.log("Connected to server as", this.socket.id);
-    this.setPodData((d) => ({ ...d, connected: true, state: State.Init }));
-  }
-
-  private onDisconnect(reason: Socket.DisconnectReason): void {
-    console.log(`Disconnected from server: ${reason}`);
-    this.setPodData((d) => ({
-      ...d,
-      connected: false,
-      state: State.Disconnected,
-    }));
-  }
-
-  private onData(data: Partial<PodData>): void {
-    console.log("server says", data);
-    this.setPodData((d) => ({ ...d, ...data }));
-  }
-
-  private onFault(data: string): void {
-    console.error("Server fault with message:", data);
-    this.addMessage(data, State.Fault);
+    this.addMessage("Pod in Halt state", State.Halted);
+    this.sendMessage("halt");
   }
 
   private addMessage(response: string, newState: State): void {
     const timestamp = new Date();
-    const newMessage = {
-      timestamp,
-      message: response,
-    };
+    const newMessage = { timestamp, message: response };
 
     this.setPodData((d) => ({
       ...d,

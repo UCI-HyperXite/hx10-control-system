@@ -1,16 +1,15 @@
 import "./console.css";
-import { useContext, useEffect, useRef, useState } from "react";
-import PodContext from "../../../Services/PodContext";
-import { MOCK_POD_DATA, PodData } from "@/Services/PodSocketClient";
+import { useContext } from "react";
+import { PodContext } from "@/Services/PodContext";
 
 export default function Console() {
-  //const { podData } = useContext(PodContext);
-  const [podData, setPodData] = useState<PodData>(MOCK_POD_DATA);
+  const context = useContext(PodContext);
 
-  useEffect(() => {
-    console.log(podData);
-    console.log(podData?.messages);
-  }, [podData]);
+  if (!context) {
+    return <div>Error: PodContext is not available!</div>;
+  }
+
+  const { podData } = context;
 
   return (
     <div className="console">

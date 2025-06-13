@@ -1,16 +1,10 @@
 import { createContext } from "react";
+import  { PodData } from "./PodSocketClient";
+import PodSocketClient from "./PodSocketClient";
 
-import PodSocketClient, { PodData } from "./PodSocketClient";
-
-interface PodContext {
+interface PodContextType {
   podSocketClient: PodSocketClient;
-  podData: Readonly<PodData>;
+  podData: PodData;
 }
 
-// Initialize with unusable object assuming proper values are always provided
-const PodContext = createContext<PodContext>({
-  podSocketClient: {} as PodSocketClient,
-  podData: {} as PodData,
-});
-
-export default PodContext;
+export const PodContext = createContext<PodContextType | undefined>(undefined);
